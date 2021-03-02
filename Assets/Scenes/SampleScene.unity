@@ -158,8 +158,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   currentHealth: 0
-  healthBar: {fileID: 0}
-  destruct: {fileID: 0}
+  healthBar: {fileID: 269966133}
+  destruct: {fileID: 1703633785}
 --- !u!58 &7587585
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -890,8 +890,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   currentHealth: 0
-  healthBar: {fileID: 0}
-  destruct: {fileID: 0}
+  healthBar: {fileID: 269966133}
+  destruct: {fileID: 1853779354}
 --- !u!58 &705067739
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1708,8 +1708,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   currentHealth: 0
-  healthBar: {fileID: 0}
-  destruct: {fileID: 0}
+  healthBar: {fileID: 269966133}
+  destruct: {fileID: 1853779354}
 --- !u!58 &2052797300
 CircleCollider2D:
   m_ObjectHideFlags: 0
