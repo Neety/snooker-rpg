@@ -14,7 +14,6 @@ public class DragNShootV2 : MonoBehaviour
     Vector2 force;
     Vector3 startPoint;
     Vector3 endPoint;
-    Vector3 camOffset = new Vector3(0, 0, 10);
 
     private void Start()
     {
@@ -23,20 +22,25 @@ public class DragNShootV2 : MonoBehaviour
     }
     private void OnMouseDown()
     {
-        startPoint = cam.ScreenToWorldPoint(Input.mousePosition) + camOffset;
+        startPoint = cam.ScreenToWorldPoint(Input.mousePosition);
         startPoint.z = 15;
     }
 
     private void OnMouseDrag()
     {
-        Vector3 currentPoint = cam.ScreenToWorldPoint(Input.mousePosition) + camOffset;
+        Vector3 currentPoint = cam.ScreenToWorldPoint(Input.mousePosition);
+        float currDist = Vector3.Distance(currentPoint, transform.position);
         currentPoint.z = 15;
-        trajectoryLine.RenderLine(transform.position + (transform.position / 2), currentPoint);
+        Vector3 dimXY = currentPoint - transform.position;
+        float diff = dimXY.magnitude;
+        Vector3 lineStart = transform.position + ((dimXY / diff) * currDist * -1);
+
+        trajectoryLine.RenderLine(lineStart, transform.position);
     }
 
     private void OnMouseUp()
     {
-        endPoint = cam.ScreenToWorldPoint(Input.mousePosition) + camOffset;
+        endPoint = cam.ScreenToWorldPoint(Input.mousePosition);
         endPoint.z = 15;
         force = new Vector2(Mathf.Clamp(startPoint.x - endPoint.x, minPower.x, maxPower.x), Mathf.Clamp(startPoint.y - endPoint.y, minPower.y, maxPower.y));
         GetComponent<Rigidbody2D>().AddForce(force * power, ForceMode2D.Impulse);
