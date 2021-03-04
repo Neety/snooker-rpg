@@ -5,7 +5,6 @@ using UnityEngine;
 public class DragNShoot : MonoBehaviour
 {
     public float power = 10f;
-    public Rigidbody2D rb;
 
     public Vector2 minPower;
     public Vector2 maxPower;
@@ -15,7 +14,7 @@ public class DragNShoot : MonoBehaviour
     Camera cam;
     Vector2 force;
     Vector3 startPoint;
-    Vector3 endPoint;  
+    Vector3 endPoint;
 
     private void Start()
     {
@@ -44,7 +43,7 @@ public class DragNShoot : MonoBehaviour
             endPoint.z = 15;
 
             force = new Vector2(Mathf.Clamp(startPoint.x - endPoint.x, minPower.x, maxPower.x), Mathf.Clamp(startPoint.y - endPoint.y, minPower.y, maxPower.y));
-            rb.AddForce(force * power, ForceMode2D.Impulse);
+            GetComponent<Rigidbody2D>().AddForce(force * power, ForceMode2D.Impulse);
             tl.EndLine();
         }
     }
