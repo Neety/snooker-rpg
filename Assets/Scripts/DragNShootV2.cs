@@ -4,38 +4,27 @@ using UnityEngine;
 
 public class DragNShootV2 : MonoBehaviour
 {
-    [SerializeField] private float power = 5f;
-
-    [SerializeField] private Vector2 minPower;
-    [SerializeField] private Vector2 maxPower;
-    Camera cam;
+    [SerializeField] private float power;
+    [SerializeField] private Vector2 minPower, maxPower;
+    [SerializeField] private Vector3 camOffset, charOffset;
+    Rigidbody2D playerBody;
     TrajectoryLineV2 trajectoryLine;
-    Vector2 force;
+    Vector2 force, minVel;
     Vector3 lineStart, lineEnd, dir;
     float dist;
-    Vector3 camOffset = new Vector3(0, 0, 10);
-    Vector3 charOffset = new Vector3(0, -.2f, 0);
-
-
 
     private void Start()
     {
         trajectoryLine = GetComponent<TrajectoryLineV2>();
-        cam = Camera.main;
-
+        playerBody = GetComponent<Rigidbody2D>();
     }
-
-    // private void OnMouseDown()
-    // {
-    //     startPoint = cam.ScreenToWorldPoint(Input.mousePosition);
-    // }
 
     private void OnMouseDrag()
     {
         lineStart = this.transform.position + charOffset;
-        Vector3 currentPoint = cam.ScreenToWorldPoint(Input.mousePosition) + camOffset;
+        Vector3 currentPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition) + camOffset;
         dir = currentPoint - lineStart;
-        dist = Mathf.Clamp(Vector3.Distance(currentPoint, lineStart), 0, 3);
+        dist = Vector3.Distance(currentPoint, lineStart);
         lineEnd = lineStart + dir.normalized * dist * -1;
 
         trajectoryLine.RenderLine(lineStart, lineEnd);
@@ -48,4 +37,29 @@ public class DragNShootV2 : MonoBehaviour
         GetComponent<Rigidbody2D>().AddForce(force * power, ForceMode2D.Impulse);
         trajectoryLine.EndLine();
     }
+
+    public bool Stopped()
+    {
+        if (playerBody.velocity.magnitude == 0)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void Update()
+    {
+        if (playerBody.velocity.magnitude > 0)
+        {
+            if (playerBody.velocity.magnitude <= 0.5f)
+            {
+                playerBody.velocity = Vector2.zero;
+            }
+        }
+
+        Debug.Log(Stopped());
+    }
+
+
 }
