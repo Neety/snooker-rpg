@@ -366,7 +366,7 @@ GameObject:
   - component: {fileID: 1355593849}
   m_Layer: 0
   m_Name: BattleSystem
-  m_TagString: Untagged
+  m_TagString: BattleSystem
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -383,8 +383,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b773b715143e2a147ab0bf9595dd1ca4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 711866922585294192, guid: 9c6753cf3d2dc004e8ad3d2255907321, type: 3}
-  enemy: {fileID: 1164584978734740201, guid: 265ac230ccd0a8941a55bde4a3bfa291, type: 3}
+  pfPlayer: {fileID: 711866922585294192, guid: 9c6753cf3d2dc004e8ad3d2255907321, type: 3}
+  pfEnemy: {fileID: 1164584978734740201, guid: 265ac230ccd0a8941a55bde4a3bfa291, type: 3}
 --- !u!4 &1355593850
 Transform:
   m_ObjectHideFlags: 0

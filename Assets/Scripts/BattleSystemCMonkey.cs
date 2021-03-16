@@ -4,46 +4,41 @@ using UnityEngine;
 
 public class BattleSystemCMonkey : MonoBehaviour
 {
-    [SerializeField] private Transform player;
-    [SerializeField] private Transform enemy;
+    private static BattleSystemCMonkey inst;
+    public static BattleSystemCMonkey GetInstance()
+    {
+        return inst;
+    }
+    [SerializeField] private Transform pfPlayer, pfEnemy;
+    private CharacterBattle player, enemy, active;
     private State state;
     private enum State
     {
-        playerTurn, enemyTurn
+        Waiting, Busy
     }
-
-    private DragNShootV2 dragNShoot;
-
+    private void Awake()
+    {
+        inst = this;
+    }
     private void Start()
     {
         SpawnCharacter(true);
         SpawnCharacter(false);
-        state = State.playerTurn;
 
-        dragNShoot = GameObject.FindGameObjectWithTag("Player").GetComponent<DragNShootV2>();
+        SetActive(player);
+        state = State.Waiting;
+
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<CharacterBattle>();
+        enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<CharacterBattle>();
     }
 
     private void Update()
     {
-        if (state == State.playerTurn)
+        if (player.Stopped())
         {
-
+            NextActive();
         }
 
-        if (dragNShoot.Stopped())
-        {
-            if (state == State.playerTurn)
-            {
-                state = State.enemyTurn;
-                Debug.Log("Enemy Turn");
-            }
-            else
-            {
-                state = State.playerTurn;
-                Debug.Log("Player Turn");
-            }
-
-        }
     }
     private void SpawnCharacter(bool isPlayerTeam)
     {
@@ -52,14 +47,38 @@ public class BattleSystemCMonkey : MonoBehaviour
         if (isPlayerTeam)
         {
             position = new Vector3(-5, 0, 0);
-            Instantiate(player, position, Quaternion.identity);
+            Instantiate(pfPlayer, position, Quaternion.identity);
         }
         else
         {
             position = new Vector3(+5, 0, 0);
-            Instantiate(enemy, position, Quaternion.identity);
+            Instantiate(pfEnemy, position, Quaternion.identity);
         }
+    }
 
+    private void SetActive(CharacterBattle activeChar)
+    {
+        active = activeChar;
+    }
 
+    private void NextActive()
+    {
+        if (active == player)
+        {
+            SetActive(enemy);
+            state = State.Busy;
+            // Enemy Battle Logic
+            NextActive();
+        }
+        else
+        {
+            SetActive(player);
+            state = State.Waiting;
+        }
+    }
+
+    public string GetState()
+    {
+        return state.ToString();
     }
 }

@@ -9,6 +9,7 @@ TagManager:
   - PointB
   - Arrow
   - Circle
+  - BattleSystem
   layers:
   - Default
   - TransparentFX
