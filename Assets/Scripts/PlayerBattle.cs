@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterBattle : MonoBehaviour
+public class PlayerBattle : MonoBehaviour
 {
     [SerializeField] private float power;
     [SerializeField] private Vector2 minPower, maxPower;
@@ -12,20 +12,26 @@ public class CharacterBattle : MonoBehaviour
     private Vector3 camOffset = new Vector3(0, 0, 10);
     private Rigidbody2D playerBody;
     private TrajectoryLineV2 trajectoryLine;
-    private BattleSystemCMonkey battleSystem;
+    private BattleHandler battleSystem;
     private float dist;
     private string state;
+    private State playerState;
+    private enum State
+    {
+        Active, Inactive
+    }
 
     private void Start()
     {
+        playerState = State.Inactive;
         trajectoryLine = GetComponent<TrajectoryLineV2>();
         playerBody = GetComponent<Rigidbody2D>();
-        battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleSystemCMonkey>();
+        battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleHandler>();
     }
 
     private void OnMouseDrag()
     {
-        if (state == "Waiting")
+        if (battleSystem.GetState() == "Waiting" && playerState == State.Inactive)
         {
             lineStart = this.transform.position + charOffset;
             Vector3 currentPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition) + camOffset;
@@ -39,33 +45,50 @@ public class CharacterBattle : MonoBehaviour
 
     private void OnMouseUp()
     {
-        if (state == "Waiting")
+        if (battleSystem.GetState() == "Waiting" && playerState == State.Inactive)
         {
             lineEnd = transform.position + dir.normalized * dist;
-            force = new Vector2(Mathf.Clamp(transform.position.x - lineEnd.x, minPower.x, maxPower.x), Mathf.Clamp(transform.position.y - lineEnd.y, minPower.y, maxPower.y));
-            GetComponent<Rigidbody2D>().AddForce(force * power, ForceMode2D.Impulse);
+            force = new Vector2(Mathf.Clamp(lineStart.x - lineEnd.x, minPower.x, maxPower.x), Mathf.Clamp(lineStart.y - lineEnd.y, minPower.y, maxPower.y));
+            playerBody.AddForce(force * power, ForceMode2D.Impulse);
             trajectoryLine.EndLine();
+            playerState = State.Active;
         }
     }
 
-    public bool Stopped()
+    private void OnCollisionEnter2D(Collision2D other)
     {
-        if (playerBody.velocity.magnitude == 0)
+
+    }
+
+    private void ProcessCollision(GameObject other)
+    {
+        if (other.CompareTag("Enemy"))
         {
-            return true;
+
         }
-        return false;
+    }
+
+    private float Damage()
+    {
+        return playerBody.velocity.magnitude;
     }
 
     private void Update()
     {
-        state = battleSystem.GetState();
-
         if (playerBody.velocity.magnitude > 0)
         {
-            if (playerBody.velocity.magnitude <= 0.2f)
+            if (playerBody.velocity.magnitude < 0.2f)
             {
                 playerBody.velocity = Vector2.zero;
+            }
+        }
+
+        if (playerState == State.Active)
+        {
+            if (playerBody.velocity == Vector2.zero)
+            {
+                battleSystem.NextActive();
+                playerState = State.Inactive;
             }
         }
     }

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 954770688816336278}
   - component: {fileID: 718729553342754601}
   - component: {fileID: -5847958089324437463}
-  - component: {fileID: 4022243375198464705}
+  - component: {fileID: -8719552876579994634}
   m_Layer: 0
   m_Name: KnightEnemy
   m_TagString: Enemy
@@ -97,8 +97,8 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 3
-  m_LinearDrag: 1
+  m_Mass: 5
+  m_LinearDrag: 2
   m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 6200000, guid: 051035e2c91f1ab4198f28bd0b7128bf, type: 2}
@@ -122,7 +122,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0.025}
   serializedVersion: 2
   m_Radius: 0.45
---- !u!114 &4022243375198464705
+--- !u!114 &-8719552876579994634
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -131,7 +131,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3697950344183804165}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f41b0b5f980921944bfb47a782d14ac4, type: 3}
+  m_Script: {fileID: 11500000, guid: 49a6f45ec37374e4cab29c5426db7ef6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   power: 15

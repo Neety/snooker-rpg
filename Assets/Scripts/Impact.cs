@@ -5,21 +5,21 @@ using UnityEngine.UI;
 
 public class Impact : MonoBehaviour
 {
-    public Rigidbody2D rb;
-    
-    public int damage;
+    // public Rigidbody2D rb;
 
-    void Start()
-    {}
+    // public int damage;
 
-    void OnTriggerEnter2D (Collider2D hitInfo)
-    {
-        Debug.Log(hitInfo.name);
+    // void Start()
+    // {}
 
-        Unit unit = hitInfo.GetComponent<Unit>();
-        if (unit != null)
-        {
-            unit.TakeDamage(damage);
-        }
-    }
+    // void OnTriggerEnter2D (Collider2D hitInfo)
+    // {
+    //     Debug.Log(hitInfo.name);
+
+    //     Unit unit = hitInfo.GetComponent<Unit>();
+    //     if (unit != null)
+    //     {
+    //         unit.TakeDamage(damage);
+    //     }
+    // }
 }

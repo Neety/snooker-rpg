@@ -10,6 +10,7 @@ TagManager:
   - Arrow
   - Circle
   - BattleSystem
+  - HealthBar
   layers:
   - Default
   - TransparentFX

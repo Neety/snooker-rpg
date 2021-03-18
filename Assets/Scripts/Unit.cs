@@ -4,35 +4,35 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    public int maxHealth = 100;
-    public int currentHealth;
+    // public int maxHealth = 100;
+    // public int currentHealth;
 
-    public HPBar healthBar;
+    // public HealthBar healthBar;
 
-    public GameObject destruct;
-    
-    void Start()
-    {
-        currentHealth = maxHealth;
-        healthBar.SetMaxHealth(maxHealth);
-    }
+    // public GameObject destruct;
 
-    public void TakeDamage(int damage)
-    {
-        currentHealth -= damage;
+    // void Start()
+    // {
+    //     currentHealth = maxHealth;
+    //     healthBar.SetMaxHealth(maxHealth);
+    // }
 
-        healthBar.SetHealth(currentHealth);
+    // public void TakeDamage(int damage)
+    // {
+    //     currentHealth -= damage;
 
-        if (currentHealth <= 0)
-        {
-            StartCoroutine (Die());
-        }
-    }
+    //     healthBar.SetHealth(currentHealth);
 
-    IEnumerator Die()
-    {
-        yield return new WaitForSeconds(0.1f);
-        Instantiate(destruct, transform.position, Quaternion.identity);
-        Destroy(gameObject);
-    }
+    //     if (currentHealth <= 0)
+    //     {
+    //         StartCoroutine(Die());
+    //     }
+    // }
+
+    // IEnumerator Die()
+    // {
+    //     yield return new WaitForSeconds(0.1f);
+    //     Instantiate(destruct, transform.position, Quaternion.identity);
+    //     Destroy(gameObject);
+    // }
 }
