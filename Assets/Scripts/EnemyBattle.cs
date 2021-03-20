@@ -10,6 +10,7 @@ public class EnemyBattle : MonoBehaviour
     private Vector2 force;
     private Rigidbody2D enemyBody;
     private BattleHandler battleSystem;
+    private GameHandler gameHandler;
     private Vector3 playerPos, enemyPos;
     private State enemyState;
     private enum State
@@ -22,6 +23,7 @@ public class EnemyBattle : MonoBehaviour
         this.enemyState = State.Inactive;
         enemyBody = GetComponent<Rigidbody2D>();
         battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleHandler>();
+        gameHandler = GameObject.FindGameObjectWithTag("GameHandler").GetComponent<GameHandler>();
     }
 
     public void Attack()
@@ -36,7 +38,28 @@ public class EnemyBattle : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        ProcessCollision(other.gameObject);
+    }
+
+    private void ProcessCollision(GameObject other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            if (battleSystem.GetActive() == "Enemy")
+            {
+                gameHandler.doDamage(Damage(), false);
+            }
+        }
+    }
+
+    private int Damage()
+    {
+        return (int)enemyBody.velocity.magnitude * 5;
+    }
+
+    private void FixedUpdate()
     {
         if (this.enemyBody.velocity.magnitude > 0)
         {
@@ -45,13 +68,16 @@ public class EnemyBattle : MonoBehaviour
                 this.enemyBody.velocity = Vector2.zero;
             }
         }
+    }
 
+    private void Update()
+    {
         if (this.enemyState == State.Active)
         {
             if (this.enemyBody.velocity == Vector2.zero)
             {
-                battleSystem.NextActive();
                 this.enemyState = State.Inactive;
+                battleSystem.NextActive();
             }
         }
     }

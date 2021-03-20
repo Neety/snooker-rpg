@@ -10,17 +10,17 @@ public class Health
     public Health(int MaxHP)
     {
         this.MaxHP = MaxHP;
-        HP = MaxHP;
+        this.HP = MaxHP;
     }
 
     public int GetHP()
     {
-        return HP;
+        return this.HP;
     }
 
     public float GetHPPercentage()
     {
-        return (float)HP / MaxHP;
+        return (float)this.HP / this.MaxHP;
     }
 
     public void Damage(int damage)

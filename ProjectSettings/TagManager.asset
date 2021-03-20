@@ -11,6 +11,7 @@ TagManager:
   - Circle
   - BattleSystem
   - HealthBar
+  - GameHandler
   layers:
   - Default
   - TransparentFX

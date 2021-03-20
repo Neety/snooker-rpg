@@ -13,6 +13,7 @@ public class PlayerBattle : MonoBehaviour
     private Rigidbody2D playerBody;
     private TrajectoryLineV2 trajectoryLine;
     private BattleHandler battleSystem;
+    private GameHandler gameHandler;
     private float dist;
     private string state;
     private State playerState;
@@ -27,6 +28,7 @@ public class PlayerBattle : MonoBehaviour
         trajectoryLine = GetComponent<TrajectoryLineV2>();
         playerBody = GetComponent<Rigidbody2D>();
         battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleHandler>();
+        gameHandler = GameObject.FindGameObjectWithTag("GameHandler").GetComponent<GameHandler>();
     }
 
     private void OnMouseDrag()
@@ -57,23 +59,26 @@ public class PlayerBattle : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-
+        ProcessCollision(other.gameObject);
     }
 
     private void ProcessCollision(GameObject other)
     {
         if (other.CompareTag("Enemy"))
         {
-
+            if (battleSystem.GetActive() == "Player")
+            {
+                gameHandler.doDamage(Damage(), true);
+            }
         }
     }
 
-    private float Damage()
+    private int Damage()
     {
-        return playerBody.velocity.magnitude;
+        return (int)playerBody.velocity.magnitude * 5;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (playerBody.velocity.magnitude > 0)
         {
@@ -82,13 +87,16 @@ public class PlayerBattle : MonoBehaviour
                 playerBody.velocity = Vector2.zero;
             }
         }
+    }
 
+    private void Update()
+    {
         if (playerState == State.Active)
         {
             if (playerBody.velocity == Vector2.zero)
             {
-                battleSystem.NextActive();
                 playerState = State.Inactive;
+                battleSystem.NextActive();
             }
         }
     }
