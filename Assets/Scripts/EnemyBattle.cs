@@ -49,6 +49,7 @@ public class EnemyBattle : MonoBehaviour
         {
             if (battleSystem.GetActive() == "Enemy")
             {
+                Debug.Log(this.enemyBody.velocity.magnitude);
                 gameHandler.doDamage(Damage(), false);
             }
         }
@@ -56,7 +57,7 @@ public class EnemyBattle : MonoBehaviour
 
     private int Damage()
     {
-        return (int)enemyBody.velocity.magnitude * 5;
+        return (int)Mathf.Ceil(enemyBody.velocity.magnitude) * 5;
     }
 
     private void FixedUpdate()
@@ -80,5 +81,7 @@ public class EnemyBattle : MonoBehaviour
                 battleSystem.NextActive();
             }
         }
+
+
     }
 }

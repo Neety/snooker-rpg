@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1164584978734740201}
   - component: {fileID: 954770688816336278}
   - component: {fileID: 718729553342754601}
-  - component: {fileID: 313615613037887383}
+  - component: {fileID: -7419116943886424178}
   - component: {fileID: -8719552876579994634}
   m_Layer: 0
   m_Name: KnightEnemy
@@ -106,7 +106,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!70 &313615613037887383
+--- !u!70 &-7419116943886424178
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -115,12 +115,12 @@ CapsuleCollider2D:
   m_GameObject: {fileID: 3697950344183804165}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 051035e2c91f1ab4198f28bd0b7128bf, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.05}
-  m_Size: {x: 0.8, y: 1.15}
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 1.15, y: 1.3}
   m_Direction: 0
 --- !u!114 &-8719552876579994634
 MonoBehaviour:
@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49a6f45ec37374e4cab29c5426db7ef6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  power: 30
+  power: 20
   minPower: {x: -3, y: -3}
   maxPower: {x: 3, y: 3}
   charOffset: {x: 0, y: -0.2, z: 0}

@@ -68,6 +68,7 @@ public class PlayerBattle : MonoBehaviour
         {
             if (battleSystem.GetActive() == "Player")
             {
+                Debug.Log(this.playerBody.velocity.magnitude);
                 gameHandler.doDamage(Damage(), true);
             }
         }
