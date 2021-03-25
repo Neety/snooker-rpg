@@ -8,10 +8,11 @@ public class EnemyBattle : MonoBehaviour
     [SerializeField] private Vector2 minPower, maxPower;
     [SerializeField] private Vector3 charOffset;
     private Vector2 force;
+    private Vector3 playerPos, enemyPos;
+    private int initiative, enemyNum;
     private Rigidbody2D enemyBody;
     private BattleHandler battleSystem;
     private GameHandler gameHandler;
-    private Vector3 playerPos, enemyPos;
     private State enemyState;
     private enum State
     {
@@ -49,8 +50,7 @@ public class EnemyBattle : MonoBehaviour
         {
             if (battleSystem.GetActive() == "Enemy")
             {
-                Debug.Log(this.enemyBody.velocity.magnitude);
-                gameHandler.doDamage(Damage(), false);
+                gameHandler.doDamage(Damage(), false, other.GetComponent<PlayerBattle>().GetPlayerNum());
             }
         }
     }
@@ -58,6 +58,24 @@ public class EnemyBattle : MonoBehaviour
     private int Damage()
     {
         return (int)Mathf.Ceil(enemyBody.velocity.magnitude) * 5;
+    }
+
+    public int GetInitiative()
+    {
+        return this.initiative;
+    }
+
+    public void SetInitiative(int init)
+    {
+        this.initiative = init;
+    }
+    public int GetEnemyNum()
+    {
+        return this.enemyNum;
+    }
+    public void SetEnemyNum(int num)
+    {
+        this.enemyNum = num;
     }
 
     private void FixedUpdate()
@@ -81,7 +99,5 @@ public class EnemyBattle : MonoBehaviour
                 battleSystem.NextActive();
             }
         }
-
-
     }
 }

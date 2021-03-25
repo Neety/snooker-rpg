@@ -10,6 +10,7 @@ public class PlayerBattle : MonoBehaviour
     private Vector2 force, minVel;
     private Vector3 lineStart, lineEnd, dir;
     private Vector3 camOffset = new Vector3(0, 0, 10);
+    private int initiative, playerNum;
     private Rigidbody2D playerBody;
     private TrajectoryLineV2 trajectoryLine;
     private BattleHandler battleSystem;
@@ -68,8 +69,8 @@ public class PlayerBattle : MonoBehaviour
         {
             if (battleSystem.GetActive() == "Player")
             {
-                Debug.Log(this.playerBody.velocity.magnitude);
-                gameHandler.doDamage(Damage(), true);
+
+                gameHandler.doDamage(Damage(), true, other.GetComponent<EnemyBattle>().GetEnemyNum());
             }
         }
     }
@@ -77,6 +78,23 @@ public class PlayerBattle : MonoBehaviour
     private int Damage()
     {
         return (int)playerBody.velocity.magnitude * 5;
+    }
+
+    public int GetInitiative()
+    {
+        return this.initiative;
+    }
+    public void SetInitiative(int init)
+    {
+        this.initiative = init;
+    }
+    public int GetPlayerNum()
+    {
+        return this.playerNum;
+    }
+    public void SetPlayerNum(int num)
+    {
+        this.playerNum = num;
     }
 
     private void FixedUpdate()

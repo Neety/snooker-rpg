@@ -9,10 +9,17 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private Transform pfHealthBar;
     [SerializeField] private GameObject pfDamageText;
     private GameObject damageText;
-    private Vector3 playerPos, enemyPos, pos;
-    private Transform playerHealthBarTransform, enemyHealthBarTransform, player, enemy;
-    public Health playerHealth, enemyHealth;
-    private HealthBar playerHealthBar, enemyHealthBar;
+    private Vector3 pos;
+    private List<Vector3> playerPos = new List<Vector3>();
+    private List<Vector3> enemyPos = new List<Vector3>();
+    private List<Transform> playerHealthBarTransform = new List<Transform>();
+    private List<Transform> enemyHealthBarTransform = new List<Transform>();
+    private List<Transform> player = new List<Transform>();
+    private List<Transform> enemy = new List<Transform>();
+    public List<Health> playerHealth = new List<Health>();
+    public List<Health> enemyHealth = new List<Health>();
+    private List<HealthBar> playerHealthBar = new List<HealthBar>();
+    private List<HealthBar> enemyHealthBar = new List<HealthBar>();
     private BattleHandler battleSystem;
     private IEnumerator Start()
     {
@@ -20,36 +27,56 @@ public class GameHandler : MonoBehaviour
 
         yield return new WaitForSeconds(0.01f);
 
-        playerHealth = new Health(MaxHP);
-        enemyHealth = new Health(MaxHP);
+        foreach (GameObject playerHBTransform in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            playerHealthBarTransform.Add(playerHBTransform.GetComponent<Transform>());
+        }
 
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
-        enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Transform>();
+        foreach (GameObject enemyHBTransform in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            enemyHealthBarTransform.Add(enemyHBTransform.GetComponent<Transform>());
+        }
 
-        playerPos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>().position + new Vector3(0f, 0.85f, 0f);
-        enemyPos = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Transform>().position + new Vector3(0f, 0.85f, 0f);
+        foreach (GameObject playerTransform in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            player.Add(playerTransform.GetComponent<Transform>());
+        }
 
-        playerHealthBarTransform = Instantiate(pfHealthBar, playerPos, Quaternion.identity, player);
-        enemyHealthBarTransform = Instantiate(pfHealthBar, enemyPos, Quaternion.identity, enemy);
+        foreach (GameObject enemyTransform in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            enemy.Add(enemyTransform.GetComponent<Transform>());
+        }
 
-        playerHealthBar = playerHealthBarTransform.GetComponent<HealthBar>();
-        enemyHealthBar = enemyHealthBarTransform.GetComponent<HealthBar>();
+        for (int i = 0; i < battleSystem.GetNumOfPlayers(); i++)
+        {
+            playerHealth[i] = new Health(MaxHP);
+            playerPos[i] = player[i].position + new Vector3(0f, 0.85f, 0f);
+            playerHealthBarTransform[i] = Instantiate(pfHealthBar, playerPos[i], Quaternion.identity, player[i]);
+            playerHealthBar[i] = playerHealthBarTransform[i].GetComponent<HealthBar>();
+            playerHealthBar[i].Setup(playerHealth[i]);
+        }
 
-        playerHealthBar.Setup(playerHealth);
-        enemyHealthBar.Setup(enemyHealth);
+        for (int i = 0; i < battleSystem.GetNumOfPlayers(); i++)
+        {
+            enemyHealth[i] = new Health(MaxHP);
+            enemyPos[i] = enemy[i].position + new Vector3(0f, 0.85f, 0f);
+            enemyHealthBarTransform[i] = Instantiate(pfHealthBar, enemyPos[i], Quaternion.identity, enemy[i]);
+            enemyHealthBar[i] = enemyHealthBarTransform[i].GetComponent<HealthBar>();
+            enemyHealthBar[i].Setup(enemyHealth[i]);
+        }
     }
 
-    public void doDamage(int damage, bool isEnemy)
+    public void doDamage(int damage, bool isEnemy, int num)
     {
         if (isEnemy)
         {
-            enemyHealth.Damage(damage);
-            ShowDamage(damage.ToString(), GetPos(isEnemy));
+            enemyHealth[num].Damage(damage);
+            ShowDamage(damage.ToString(), GetPos(isEnemy, num));
         }
         else
         {
-            playerHealth.Damage(damage);
-            ShowDamage(damage.ToString(), GetPos(isEnemy));
+            playerHealth[num].Damage(damage);
+            ShowDamage(damage.ToString(), GetPos(isEnemy, num));
         }
     }
 
@@ -62,15 +89,15 @@ public class GameHandler : MonoBehaviour
         }
     }
 
-    private Vector3 GetPos(bool isEnemy)
+    private Vector3 GetPos(bool isEnemy, int num)
     {
         if (isEnemy)
         {
-            pos = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Transform>().position + new Vector3(0f, 0.85f, 0f);
+            pos = player[num].position + new Vector3(0f, 0.85f, 0f);
         }
         else
         {
-            pos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>().position + new Vector3(0f, 0.85f, 0f);
+            pos = player[num].position + new Vector3(0f, 0.85f, 0f);
         }
 
         return pos;

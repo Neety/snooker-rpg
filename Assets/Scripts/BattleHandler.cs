@@ -10,8 +10,14 @@ public class BattleHandler : MonoBehaviour
         return inst;
     }
     [SerializeField] private Transform pfPlayer, pfEnemy;
-    private PlayerBattle player, activePlayer;
-    private EnemyBattle enemy, activeEnemy;
+    [SerializeField] private int numOfPlayers;
+    [SerializeField] private int numOfEnemies;
+    private List<int> playerInits = new List<int>();
+    private List<int> enemyInits = new List<int>();
+    private List<PlayerBattle> players = new List<PlayerBattle>();
+    private List<EnemyBattle> enemies = new List<EnemyBattle>();
+    private PlayerBattle activePlayer;
+    private EnemyBattle activeEnemy;
     private State state;
     private enum State
     {
@@ -28,28 +34,48 @@ public class BattleHandler : MonoBehaviour
     }
     private void Start()
     {
-        SpawnCharacter(true);
-        SpawnCharacter(false);
+        GenerateInitiative(playerInits, numOfPlayers);
+        for (int i = 0; i < numOfPlayers; i++)
+        {
+            SpawnCharacter(true, playerInits[i], i);
+        }
+
+        GenerateInitiative(enemyInits, numOfEnemies);
+        for (int i = 0; i < numOfEnemies; i++)
+        {
+            SpawnCharacter(false, enemyInits[i], i);
+        }
 
         SetActivePlayer(player);
 
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerBattle>();
-        enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<EnemyBattle>();
+        foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            players.Add(player.GetComponent<PlayerBattle>());
+        }
+
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            enemies.Add(enemy.GetComponent<EnemyBattle>());
+        }
     }
 
-    private void SpawnCharacter(bool isPlayerTeam)
+    private void SpawnCharacter(bool isPlayerTeam, int initiative, int num)
     {
         Vector3 position;
 
         if (isPlayerTeam)
         {
-            position = new Vector3(-5, 0, 0);
+            position = new Vector3(Random.Range(-8f, -4f), Random.Range(-4f, 0), 0);
             Instantiate(pfPlayer, position, Quaternion.identity);
+            players[num].SetInitiative(initiative);
+            players[num].SetPlayerNum(num);
         }
         else
         {
-            position = new Vector3(+5, 0, 0);
+            position = new Vector3(Random.Range(4f, 8f), Random.Range(0, 4f), 0);
             Instantiate(pfEnemy, position, Quaternion.identity);
+            enemies[num].SetInitiative(initiative);
+            enemies[num].SetEnemyNum(num);
         }
     }
 
@@ -89,5 +115,37 @@ public class BattleHandler : MonoBehaviour
     public string GetActive()
     {
         return active.ToString();
+    }
+    public int GetNumOfPlayers()
+    {
+        return numOfPlayers;
+    }
+    public int GetNumOfEnemies()
+    {
+        return numOfEnemies;
+    }
+    public List<PlayerBattle> GetPlayers()
+    {
+        return players;
+    }
+    public List<EnemyBattle> GetEnemies()
+    {
+        return enemies;
+    }
+    private void GenerateInitiative(List<int> inits, int numOfInits)
+    {
+        int init;
+
+        for (int i = 0; i < numOfInits + 1; i++)
+        {
+            init = Random.Range(1, numOfInits);
+
+            while (inits.Contains(init))
+            {
+                init = Random.Range(1, numOfInits);
+            }
+
+            inits[i] = init * 5;
+        }
     }
 }
