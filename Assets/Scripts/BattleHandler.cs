@@ -46,8 +46,6 @@ public class BattleHandler : MonoBehaviour
             SpawnCharacter(false, enemyInits[i], i);
         }
 
-        SetActivePlayer(player);
-
         foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
         {
             players.Add(player.GetComponent<PlayerBattle>());
@@ -57,6 +55,10 @@ public class BattleHandler : MonoBehaviour
         {
             enemies.Add(enemy.GetComponent<EnemyBattle>());
         }
+
+        players.Sort(SortInitiative);
+
+        SetActive(players[0]);
     }
 
     private void SpawnCharacter(bool isPlayerTeam, int initiative, int num)
@@ -79,31 +81,46 @@ public class BattleHandler : MonoBehaviour
         }
     }
 
-    private void SetActivePlayer(PlayerBattle activeP)
-    {
-        activePlayer = activeP;
-        active = Active.Player;
-        state = State.Waiting;
-    }
+    // private void SetActivePlayer(PlayerBattle activeP)
+    // {
+    //     activePlayer = activeP;
+    //     active = Active.Player;
+    //     state = State.Waiting;
+    // }
 
-    private void SetActiveEnemy(EnemyBattle activeE)
+    // private void SetActiveEnemy(EnemyBattle activeE)
+    // {
+    //     activeEnemy = activeE;
+    //     active = Active.Enemy;
+    //     state = State.Busy;
+    // }
+
+    private void SetActive<T>(T activeEntity)
     {
-        activeEnemy = activeE;
-        active = Active.Enemy;
-        state = State.Busy;
+        if (typeof(T) == typeof(PlayerBattle))
+        {
+            activePlayer = (PlayerBattle)(object)activeEntity;
+            active = Active.Player;
+            state = State.Waiting;
+        }
+        else if (typeof(T) == typeof(EnemyBattle))
+        {
+            activeEnemy = (EnemyBattle)(object)activeEntity;
+            active = Active.Enemy;
+            state = State.Busy;
+        }
     }
 
     public void NextActive()
     {
         if (active == Active.Player)
         {
-            SetActiveEnemy(enemy);
+            SetActive<EnemyBattle>(enemy);
             enemy.Attack();
         }
         else
         {
-            SetActivePlayer(player);
-            state = State.Waiting;
+            SetActive<PlayerBattle>(player);
         }
     }
 
@@ -147,5 +164,18 @@ public class BattleHandler : MonoBehaviour
 
             inits[i] = init * 5;
         }
+    }
+
+    private int SortInitiative(PlayerBattle a, PlayerBattle b)
+    {
+        if (a.GetInitiative() < b.GetInitiative())
+        {
+            return -1;
+        }
+        else if (a.GetInitiative() > b.GetInitiative())
+        {
+            return 1;
+        }
+        return 0;
     }
 }
