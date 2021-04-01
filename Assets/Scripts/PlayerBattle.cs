@@ -7,8 +7,9 @@ public class PlayerBattle : MonoBehaviour
     [SerializeField] private float power;
     [SerializeField] private Vector2 minPower, maxPower;
     [SerializeField] private Vector3 charOffset;
+    private Transform select;
     private Vector2 force, minVel;
-    private Vector3 lineStart, lineEnd, dir;
+    private Vector3 currentPoint, lineStart, lineEnd, dir;
     private Vector3 camOffset = new Vector3(0, 0, 10);
     private int initiative, playerNum;
     private Rigidbody2D playerBody;
@@ -17,44 +18,39 @@ public class PlayerBattle : MonoBehaviour
     private GameHandler gameHandler;
     private float dist;
     private string state;
-    private State playerState;
-    private enum State
-    {
-        Active, Inactive
-    }
+    private bool active, hit;
 
     private void Start()
     {
-        playerState = State.Inactive;
-        trajectoryLine = GetComponent<TrajectoryLineV2>();
-        playerBody = GetComponent<Rigidbody2D>();
+        this.hit = false;
+        this.trajectoryLine = GetComponent<TrajectoryLineV2>();
+        this.playerBody = GetComponent<Rigidbody2D>();
         battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleHandler>();
         gameHandler = GameObject.FindGameObjectWithTag("GameHandler").GetComponent<GameHandler>();
     }
 
     private void OnMouseDrag()
     {
-        if (battleSystem.GetState() == "Waiting" && playerState == State.Inactive)
+        if (this.active == true && battleSystem.GetActive() == "Player")
         {
-            lineStart = this.transform.position + charOffset;
-            Vector3 currentPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition) + camOffset;
-            dir = currentPoint - lineStart;
-            dist = Vector3.Distance(currentPoint, lineStart);
-            lineEnd = lineStart + dir.normalized * dist * -1;
-
-            trajectoryLine.RenderLine(lineStart, lineEnd);
+            this.lineStart = this.transform.position + this.charOffset;
+            this.currentPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition) + camOffset;
+            this.dir = this.currentPoint - this.lineStart;
+            this.dist = Vector3.Distance(this.currentPoint, this.lineStart);
+            this.lineEnd = this.lineStart + this.dir.normalized * this.dist * -1;
+            this.trajectoryLine.RenderLine(this.lineStart, this.lineEnd);
         }
     }
 
     private void OnMouseUp()
     {
-        if (battleSystem.GetState() == "Waiting" && playerState == State.Inactive)
+        if (this.active == true && battleSystem.GetActive() == "Player")
         {
-            lineEnd = transform.position + dir.normalized * dist;
-            force = new Vector2(Mathf.Clamp(lineStart.x - lineEnd.x, minPower.x, maxPower.x), Mathf.Clamp(lineStart.y - lineEnd.y, minPower.y, maxPower.y));
-            playerBody.AddForce(force * power, ForceMode2D.Impulse);
-            trajectoryLine.EndLine();
-            playerState = State.Active;
+            this.lineEnd = this.transform.position + this.dir.normalized * this.dist;
+            this.force = new Vector2(Mathf.Clamp(this.lineStart.x - this.lineEnd.x, this.minPower.x, this.maxPower.x), Mathf.Clamp(this.lineStart.y - this.lineEnd.y, this.minPower.y, this.maxPower.y));
+            this.playerBody.AddForce(this.force * power, ForceMode2D.Impulse);
+            this.trajectoryLine.EndLine();
+            this.hit = true;
         }
     }
 
@@ -77,7 +73,7 @@ public class PlayerBattle : MonoBehaviour
 
     private int Damage()
     {
-        return (int)playerBody.velocity.magnitude * 5;
+        return (int)Mathf.Ceil(this.playerBody.velocity.magnitude) * 5;
     }
 
     public int GetInitiative()
@@ -97,26 +93,46 @@ public class PlayerBattle : MonoBehaviour
         this.playerNum = num;
     }
 
+    public void SetState(bool active)
+    {
+        if (active == true)
+        {
+            this.active = true;
+        }
+        else
+            this.active = false;
+    }
+
+    public bool GetState()
+    {
+        return this.active;
+    }
+
     private void FixedUpdate()
     {
-        if (playerBody.velocity.magnitude > 0)
+        if (this.active == true)
         {
-            if (playerBody.velocity.magnitude < 0.2f)
+            if (this.hit == true)
             {
-                playerBody.velocity = Vector2.zero;
+                if (this.playerBody.velocity.magnitude == 0)
+                {
+                    this.active = false;
+                }
             }
         }
     }
 
-    private void Update()
+    private void LateUpdate()
     {
-        if (playerState == State.Active)
+        if (this.hit == true && this.active == false)
         {
-            if (playerBody.velocity == Vector2.zero)
-            {
-                playerState = State.Inactive;
-                battleSystem.NextActive();
-            }
+            battleSystem.NextActive();
+            this.hit = false;
         }
     }
+
+    // private void LateUpdate()
+    // {
+    //     Debug.Log(this.active);
+    // }
 }

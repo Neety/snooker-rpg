@@ -7,6 +7,8 @@ public class GameHandler : MonoBehaviour
 {
     [SerializeField] private int MaxHP;
     [SerializeField] private Transform pfHealthBar;
+    [SerializeField] private GameObject playerSelect;
+    [SerializeField] private GameObject enemySelect;
     [SerializeField] private GameObject pfDamageText;
     private GameObject damageText;
     private Vector3 pos;
@@ -14,6 +16,8 @@ public class GameHandler : MonoBehaviour
     private List<Vector3> enemyPos = new List<Vector3>();
     private List<Transform> playerHealthBarTransform = new List<Transform>();
     private List<Transform> enemyHealthBarTransform = new List<Transform>();
+    private List<GameObject> playerSelectTransform = new List<GameObject>();
+    private List<GameObject> enemySelectTransform = new List<GameObject>();
     private List<Transform> player = new List<Transform>();
     private List<Transform> enemy = new List<Transform>();
     public List<Health> playerHealth = new List<Health>();
@@ -21,6 +25,8 @@ public class GameHandler : MonoBehaviour
     private List<HealthBar> playerHealthBar = new List<HealthBar>();
     private List<HealthBar> enemyHealthBar = new List<HealthBar>();
     private BattleHandler battleSystem;
+    private PlayerBattle playerBattle;
+    private EnemyBattle enemyBattle;
     private IEnumerator Start()
     {
         battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleHandler>();
@@ -49,19 +55,23 @@ public class GameHandler : MonoBehaviour
 
         for (int i = 0; i < battleSystem.GetNumOfPlayers(); i++)
         {
-            playerHealth[i] = new Health(MaxHP);
-            playerPos[i] = player[i].position + new Vector3(0f, 0.85f, 0f);
-            playerHealthBarTransform[i] = Instantiate(pfHealthBar, playerPos[i], Quaternion.identity, player[i]);
-            playerHealthBar[i] = playerHealthBarTransform[i].GetComponent<HealthBar>();
+            playerHealth.Insert(i, new Health(MaxHP));
+            playerPos.Insert(i, player[i].position);
+            playerHealthBarTransform.Insert(i, Instantiate(pfHealthBar, playerPos[i] + new Vector3(0f, 0.85f, 0f), Quaternion.identity, player[i]));
+            playerSelectTransform.Insert(i, Instantiate(playerSelect, playerPos[i] + new Vector3(0f, -0.65f, 0f), Quaternion.identity, player[i]));
+            playerSelectTransform[i].SetActive(false);
+            playerHealthBar.Insert(i, playerHealthBarTransform[i].GetComponent<HealthBar>());
             playerHealthBar[i].Setup(playerHealth[i]);
         }
 
-        for (int i = 0; i < battleSystem.GetNumOfPlayers(); i++)
+        for (int i = 0; i < battleSystem.GetNumOfEnemies(); i++)
         {
-            enemyHealth[i] = new Health(MaxHP);
-            enemyPos[i] = enemy[i].position + new Vector3(0f, 0.85f, 0f);
-            enemyHealthBarTransform[i] = Instantiate(pfHealthBar, enemyPos[i], Quaternion.identity, enemy[i]);
-            enemyHealthBar[i] = enemyHealthBarTransform[i].GetComponent<HealthBar>();
+            enemyHealth.Insert(i, new Health(MaxHP));
+            enemyPos.Insert(i, enemy[i].position);
+            enemyHealthBarTransform.Insert(i, Instantiate(pfHealthBar, enemyPos[i] + new Vector3(0f, 0.85f, 0f), Quaternion.identity, enemy[i]));
+            enemySelectTransform.Insert(i, Instantiate(enemySelect, enemyPos[i] + new Vector3(0f, -0.65f, 0f), Quaternion.identity, enemy[i]));
+            enemySelectTransform[i].SetActive(false);
+            enemyHealthBar.Insert(i, enemyHealthBarTransform[i].GetComponent<HealthBar>());
             enemyHealthBar[i].Setup(enemyHealth[i]);
         }
     }
@@ -93,7 +103,7 @@ public class GameHandler : MonoBehaviour
     {
         if (isEnemy)
         {
-            pos = player[num].position + new Vector3(0f, 0.85f, 0f);
+            pos = enemy[num].position + new Vector3(0f, 0.85f, 0f);
         }
         else
         {
@@ -101,6 +111,18 @@ public class GameHandler : MonoBehaviour
         }
 
         return pos;
+    }
 
+    private void Update()
+    {
+        if (playerBattle.GetState() == true)
+        {
+            playerSelectTransform[playerBattle.GetPlayerNum()].SetActive(true);
+        }
+
+        if (enemyBattle.GetState() == true)
+        {
+            enemySelectTransform[enemyBattle.GetEnemyNum()].SetActive(true);
+        }
     }
 }

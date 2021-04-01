@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,19 +11,12 @@ public class BattleHandler : MonoBehaviour
         return inst;
     }
     [SerializeField] private Transform pfPlayer, pfEnemy;
-    [SerializeField] private int numOfPlayers;
-    [SerializeField] private int numOfEnemies;
+    private int numOfPlayers;
+    private int numOfEnemies;
     private List<int> playerInits = new List<int>();
     private List<int> enemyInits = new List<int>();
     private List<PlayerBattle> players = new List<PlayerBattle>();
     private List<EnemyBattle> enemies = new List<EnemyBattle>();
-    private PlayerBattle activePlayer;
-    private EnemyBattle activeEnemy;
-    private State state;
-    private enum State
-    {
-        Waiting, Busy
-    }
     private Active active;
     private enum Active
     {
@@ -31,37 +25,50 @@ public class BattleHandler : MonoBehaviour
     private void Awake()
     {
         inst = this;
+
+        numOfPlayers = 3;
+        numOfEnemies = 3;
     }
     private void Start()
     {
-        GenerateInitiative(playerInits, numOfPlayers);
         for (int i = 0; i < numOfPlayers; i++)
         {
-            SpawnCharacter(true, playerInits[i], i);
+            SpawnCharacter(true, i);
         }
-
-        GenerateInitiative(enemyInits, numOfEnemies);
         for (int i = 0; i < numOfEnemies; i++)
         {
-            SpawnCharacter(false, enemyInits[i], i);
+            SpawnCharacter(false, i);
         }
 
         foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
         {
             players.Add(player.GetComponent<PlayerBattle>());
         }
-
         foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
         {
             enemies.Add(enemy.GetComponent<EnemyBattle>());
         }
 
-        players.Sort(SortInitiative);
+        for (int i = 0; i < numOfPlayers; i++)
+        {
+            players[i].SetPlayerNum(i);
+        }
+        for (int i = 0; i < numOfEnemies; i++)
+        {
+            enemies[i].SetEnemyNum(i);
+        }
 
-        SetActive(players[0]);
+        GenerateInitiative<PlayerBattle>(players, numOfPlayers);
+        GenerateInitiative<EnemyBattle>(enemies, numOfEnemies);
+
+        players = players.OrderBy(p => p.GetInitiative()).ToList();
+        enemies = enemies.OrderBy(e => e.GetInitiative()).ToList();
+
+        // SetActivePlayer(players[0]);
+        SetActive<PlayerBattle>(players[0]);
     }
 
-    private void SpawnCharacter(bool isPlayerTeam, int initiative, int num)
+    private void SpawnCharacter(bool isPlayerTeam, int num)
     {
         Vector3 position;
 
@@ -69,45 +76,39 @@ public class BattleHandler : MonoBehaviour
         {
             position = new Vector3(Random.Range(-8f, -4f), Random.Range(-4f, 0), 0);
             Instantiate(pfPlayer, position, Quaternion.identity);
-            players[num].SetInitiative(initiative);
-            players[num].SetPlayerNum(num);
         }
         else
         {
             position = new Vector3(Random.Range(4f, 8f), Random.Range(0, 4f), 0);
             Instantiate(pfEnemy, position, Quaternion.identity);
-            enemies[num].SetInitiative(initiative);
-            enemies[num].SetEnemyNum(num);
         }
     }
 
     // private void SetActivePlayer(PlayerBattle activeP)
     // {
-    //     activePlayer = activeP;
+    //     activeP.SetState(true);
     //     active = Active.Player;
-    //     state = State.Waiting;
     // }
 
     // private void SetActiveEnemy(EnemyBattle activeE)
     // {
-    //     activeEnemy = activeE;
+    //     activeE.SetState(true);
     //     active = Active.Enemy;
-    //     state = State.Busy;
     // }
 
     private void SetActive<T>(T activeEntity)
     {
         if (typeof(T) == typeof(PlayerBattle))
         {
-            activePlayer = (PlayerBattle)(object)activeEntity;
+            PlayerBattle aP = (PlayerBattle)(object)activeEntity;
+            aP.SetState(true);
             active = Active.Player;
-            state = State.Waiting;
         }
         else if (typeof(T) == typeof(EnemyBattle))
         {
-            activeEnemy = (EnemyBattle)(object)activeEntity;
+            EnemyBattle aE = (EnemyBattle)(object)activeEntity;
+            aE.SetState(true);
             active = Active.Enemy;
-            state = State.Busy;
         }
     }
 
@@ -115,18 +116,15 @@ public class BattleHandler : MonoBehaviour
     {
         if (active == Active.Player)
         {
-            SetActive<EnemyBattle>(enemy);
-            enemy.Attack();
+            // SetActiveEnemy(enemies[0]);
+            SetActive<EnemyBattle>(enemies[0]);
+            enemies[0].Attack();
         }
         else
         {
-            SetActive<PlayerBattle>(player);
+            // SetActivePlayer(players[0]);
+            SetActive<PlayerBattle>(players[0]);
         }
-    }
-
-    public string GetState()
-    {
-        return state.ToString();
     }
 
     public string GetActive()
@@ -149,33 +147,71 @@ public class BattleHandler : MonoBehaviour
     {
         return enemies;
     }
-    private void GenerateInitiative(List<int> inits, int numOfInits)
+
+    private void GenerateInitiative<T>(List<T> entities, int numOfInits)
     {
         int init;
 
-        for (int i = 0; i < numOfInits + 1; i++)
+        for (int i = 0; i < numOfInits; i++)
         {
             init = Random.Range(1, numOfInits);
 
-            while (inits.Contains(init))
+            if (typeof(T) == typeof(PlayerBattle))
             {
-                init = Random.Range(1, numOfInits);
-            }
+                List<PlayerBattle> players = (List<PlayerBattle>)(object)entities;
 
-            inits[i] = init * 5;
+                while (players.Any(p => p.GetInitiative() == init))
+                {
+                    init = Random.Range(1, numOfInits + 1);
+                }
+
+                players[i].SetInitiative(init);
+            }
+            else
+            {
+                List<EnemyBattle> enemies = (List<EnemyBattle>)(object)entities;
+
+                while (enemies.Any(e => e.GetInitiative() == init))
+                {
+                    init = Random.Range(1, numOfInits + 1);
+                }
+
+                enemies[i].SetInitiative(init);
+            }
         }
     }
 
-    private int SortInitiative(PlayerBattle a, PlayerBattle b)
+    private int SortInitiative<T>(T a, T b)
     {
-        if (a.GetInitiative() < b.GetInitiative())
+        if (typeof(T) == typeof(PlayerBattle))
         {
-            return -1;
+            PlayerBattle alpha = (PlayerBattle)(object)a;
+            PlayerBattle beta = (PlayerBattle)(object)b;
+
+            if (alpha.GetInitiative() < beta.GetInitiative())
+            {
+                return -1;
+            }
+            else if (alpha.GetInitiative() > beta.GetInitiative())
+            {
+                return 1;
+            }
+            return 0;
         }
-        else if (a.GetInitiative() > b.GetInitiative())
+        else
         {
-            return 1;
+            EnemyBattle alpha = (EnemyBattle)(object)a;
+            EnemyBattle beta = (EnemyBattle)(object)b;
+
+            if (alpha.GetInitiative() < beta.GetInitiative())
+            {
+                return -1;
+            }
+            else if (alpha.GetInitiative() > beta.GetInitiative())
+            {
+                return 1;
+            }
+            return 0;
         }
-        return 0;
     }
 }

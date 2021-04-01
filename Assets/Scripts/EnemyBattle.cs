@@ -7,35 +7,32 @@ public class EnemyBattle : MonoBehaviour
     [SerializeField] private float power;
     [SerializeField] private Vector2 minPower, maxPower;
     [SerializeField] private Vector3 charOffset;
+    [SerializeField] private Transform select;
     private Vector2 force;
     private Vector3 playerPos, enemyPos;
     private int initiative, enemyNum;
     private Rigidbody2D enemyBody;
     private BattleHandler battleSystem;
     private GameHandler gameHandler;
-    private State enemyState;
-    private enum State
-    {
-        Active, Inactive
-    }
+    private bool active, hit;
 
     private void Start()
     {
-        this.enemyState = State.Inactive;
-        enemyBody = GetComponent<Rigidbody2D>();
+        this.hit = false;
+        this.enemyBody = GetComponent<Rigidbody2D>();
         battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleHandler>();
         gameHandler = GameObject.FindGameObjectWithTag("GameHandler").GetComponent<GameHandler>();
     }
 
     public void Attack()
     {
-        if (battleSystem.GetState() == "Busy" && enemyState == State.Inactive)
+        if (this.active == true && battleSystem.GetActive() == "Enemy")
         {
-            enemyPos = this.transform.position + charOffset;
+            this.enemyPos = this.transform.position + charOffset;
             playerPos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>().position;
-            force = new Vector2(Mathf.Clamp(playerPos.x - enemyPos.x, minPower.x, maxPower.x), Mathf.Clamp(playerPos.y - enemyPos.y, minPower.y, maxPower.y));
-            enemyBody.AddForce(force * power, ForceMode2D.Impulse);
-            this.enemyState = State.Active;
+            this.force = new Vector2(Mathf.Clamp(playerPos.x - this.enemyPos.x, this.minPower.x, this.maxPower.x), Mathf.Clamp(playerPos.y - this.enemyPos.y, this.minPower.y, this.maxPower.y));
+            this.enemyBody.AddForce(this.force * power, ForceMode2D.Impulse);
+            this.hit = true;
         }
     }
 
@@ -57,14 +54,13 @@ public class EnemyBattle : MonoBehaviour
 
     private int Damage()
     {
-        return (int)Mathf.Ceil(enemyBody.velocity.magnitude) * 5;
+        return (int)Mathf.Ceil(this.enemyBody.velocity.magnitude) * 5;
     }
 
     public int GetInitiative()
     {
         return this.initiative;
     }
-
     public void SetInitiative(int init)
     {
         this.initiative = init;
@@ -77,27 +73,43 @@ public class EnemyBattle : MonoBehaviour
     {
         this.enemyNum = num;
     }
+    public void SetState(bool active)
+    {
+        if (active == true)
+        {
+            this.active = true;
+        }
+        else
+            this.active = false;
+    }
+
+    public bool GetState()
+    {
+        return this.active;
+    }
 
     private void FixedUpdate()
     {
-        if (this.enemyBody.velocity.magnitude > 0)
+        if (this.active == true)
         {
-            if (this.enemyBody.velocity.magnitude <= 0.2f)
+            GetComponentInChildren<GameObject>().SetActive(true);
+            if (this.hit == true)
             {
-                this.enemyBody.velocity = Vector2.zero;
+                if (this.enemyBody.velocity.magnitude == 0)
+                {
+                    this.active = false;
+                }
             }
         }
     }
 
-    private void Update()
+    private void LateUpdate()
     {
-        if (this.enemyState == State.Active)
+        if (this.hit == true && this.active == false)
         {
-            if (this.enemyBody.velocity == Vector2.zero)
-            {
-                this.enemyState = State.Inactive;
-                battleSystem.NextActive();
-            }
+            battleSystem.NextActive();
+            this.hit = false;
+            GetComponentInChildren<GameObject>().SetActive(false);
         }
     }
 }
