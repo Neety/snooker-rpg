@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1164584978734740201}
   - component: {fileID: 954770688816336278}
   - component: {fileID: 718729553342754601}
-  - component: {fileID: -7419116943886424178}
+  - component: {fileID: 5811170335328603276}
   - component: {fileID: -8719552876579994634}
   m_Layer: 0
   m_Name: KnightEnemy
@@ -74,7 +74,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: e6338a5a834abf44abae629c8ea0002d, type: 3}
+  m_Sprite: {fileID: 3286163911610860551, guid: 1737d347f4ac4fb49b0d04eccdca9007,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -106,8 +107,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!70 &-7419116943886424178
-CapsuleCollider2D:
+--- !u!58 &5811170335328603276
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -115,13 +116,13 @@ CapsuleCollider2D:
   m_GameObject: {fileID: 3697950344183804165}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 051035e2c91f1ab4198f28bd0b7128bf, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1.15, y: 1.3}
-  m_Direction: 0
+  serializedVersion: 2
+  m_Radius: 1
 --- !u!114 &-8719552876579994634
 MonoBehaviour:
   m_ObjectHideFlags: 0

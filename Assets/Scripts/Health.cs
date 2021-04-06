@@ -4,8 +4,7 @@ using UnityEngine;
 public class Health
 {
     public event EventHandler OnHealthChanged;
-    [SerializeField] private int MaxHP;
-    private int HP;
+    private int MaxHP, HP;
 
     public Health(int MaxHP)
     {

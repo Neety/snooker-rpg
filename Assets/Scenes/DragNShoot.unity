@@ -271,36 +271,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &865391907
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 865391908}
-  m_Layer: 0
-  m_Name: TransformIndicator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &865391908
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 865391907}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.56, y: 0.28, z: -8.241936}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &963195826
 GameObject:
   m_ObjectHideFlags: 0
@@ -330,15 +300,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e7aa606d910bfb47ab124fbe48c0761, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 50
-  pfHealthBar: {fileID: 539329214353088373, guid: 804a62d1b67bc9343a638ac32d915bfe,
-    type: 3}
-  playerSelect: {fileID: 3327606678011656509, guid: 61ae2315e6066f74f85e89888fa8bd6d,
-    type: 3}
-  enemySelect: {fileID: 1457664989480407433, guid: f14c535541609e24095c563be07d8158,
-    type: 3}
-  pfDamageText: {fileID: 4183064016404054479, guid: 96eb7516f4a44964fb26783a95fb7268,
-    type: 3}
 --- !u!4 &963195828
 Transform:
   m_ObjectHideFlags: 0
@@ -406,7 +367,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 12
+  orthographic size: 10.627468
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -467,6 +428,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pfPlayer: {fileID: 711866922585294192, guid: 9c6753cf3d2dc004e8ad3d2255907321, type: 3}
   pfEnemy: {fileID: 1164584978734740201, guid: 265ac230ccd0a8941a55bde4a3bfa291, type: 3}
+  pfHealthBar: {fileID: 539329214353088373, guid: 804a62d1b67bc9343a638ac32d915bfe,
+    type: 3}
+  playerSelect: {fileID: 3327606678011656509, guid: 61ae2315e6066f74f85e89888fa8bd6d,
+    type: 3}
+  enemySelect: {fileID: 1457664989480407433, guid: f14c535541609e24095c563be07d8158,
+    type: 3}
+  pfDamageText: {fileID: 4183064016404054479, guid: 96eb7516f4a44964fb26783a95fb7268,
+    type: 3}
 --- !u!4 &1355593850
 Transform:
   m_ObjectHideFlags: 0

@@ -31,7 +31,7 @@ public class PlayerBattle : MonoBehaviour
 
     private void OnMouseDrag()
     {
-        if (this.active == true && battleSystem.GetActive() == "Player")
+        if (this.active == true && this.hit == false && battleSystem.GetActive() == "Player")
         {
             this.lineStart = this.transform.position + this.charOffset;
             this.currentPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition) + camOffset;
@@ -44,7 +44,7 @@ public class PlayerBattle : MonoBehaviour
 
     private void OnMouseUp()
     {
-        if (this.active == true && battleSystem.GetActive() == "Player")
+        if (this.active == true && this.hit == false && battleSystem.GetActive() == "Player")
         {
             this.lineEnd = this.transform.position + this.dir.normalized * this.dist;
             this.force = new Vector2(Mathf.Clamp(this.lineStart.x - this.lineEnd.x, this.minPower.x, this.maxPower.x), Mathf.Clamp(this.lineStart.y - this.lineEnd.y, this.minPower.y, this.maxPower.y));
@@ -65,8 +65,11 @@ public class PlayerBattle : MonoBehaviour
         {
             if (battleSystem.GetActive() == "Player")
             {
+                if (this.active == true)
+                {
+                    battleSystem.doDamage(Damage(), true, other.gameObject.GetComponent<EnemyBattle>().GetEnemyNum(), other.gameObject.GetComponent<Transform>().position);
 
-                gameHandler.doDamage(Damage(), true, other.GetComponent<EnemyBattle>().GetEnemyNum());
+                }
             }
         }
     }
@@ -114,8 +117,9 @@ public class PlayerBattle : MonoBehaviour
         {
             if (this.hit == true)
             {
-                if (this.playerBody.velocity.magnitude == 0)
+                if (this.playerBody.velocity.magnitude < 0.2f)
                 {
+                    this.playerBody.velocity = Vector3.zero;
                     this.active = false;
                 }
             }
@@ -130,9 +134,4 @@ public class PlayerBattle : MonoBehaviour
             this.hit = false;
         }
     }
-
-    // private void LateUpdate()
-    // {
-    //     Debug.Log(this.active);
-    // }
 }

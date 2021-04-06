@@ -47,7 +47,11 @@ public class EnemyBattle : MonoBehaviour
         {
             if (battleSystem.GetActive() == "Enemy")
             {
-                gameHandler.doDamage(Damage(), false, other.GetComponent<PlayerBattle>().GetPlayerNum());
+                if (this.active == true)
+                {
+                    battleSystem.doDamage(Damage(), false, other.gameObject.GetComponent<PlayerBattle>().GetPlayerNum(), other.gameObject.GetComponent<Transform>().position);
+
+                }
             }
         }
     }
@@ -92,11 +96,11 @@ public class EnemyBattle : MonoBehaviour
     {
         if (this.active == true)
         {
-            GetComponentInChildren<GameObject>().SetActive(true);
             if (this.hit == true)
             {
-                if (this.enemyBody.velocity.magnitude == 0)
+                if (this.enemyBody.velocity.magnitude < 0.2f)
                 {
+                    this.enemyBody.velocity = Vector3.zero;
                     this.active = false;
                 }
             }
@@ -109,7 +113,6 @@ public class EnemyBattle : MonoBehaviour
         {
             battleSystem.NextActive();
             this.hit = false;
-            GetComponentInChildren<GameObject>().SetActive(false);
         }
     }
 }
