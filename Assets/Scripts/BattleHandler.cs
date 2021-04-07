@@ -15,16 +15,21 @@ public class BattleHandler : MonoBehaviour
     [SerializeField] private GameObject playerSelect, enemySelect, pfDamageText;
 
     private int numOfPlayers;
+    private int activePlayerNum;
     private List<Transform> players = new List<Transform>();
     private List<Health> playerHealth = new List<Health>();
     private List<HealthBar> playerHealthBar = new List<HealthBar>();
     private List<Transform> playerHealthBarTransform = new List<Transform>();
+    private List<GameObject> playerSelectTransform = new List<GameObject>();
 
     private int numOfEnemies;
+    private int activeEnemyNum;
     private List<Transform> enemies = new List<Transform>();
     private List<Health> enemyHealth = new List<Health>();
     private List<HealthBar> enemyHealthBar = new List<HealthBar>();
     private List<Transform> enemyHealthBarTransform = new List<Transform>();
+    private List<GameObject> enemySelectTransform = new List<GameObject>();
+
 
     private Active active;
     private enum Active
@@ -76,7 +81,8 @@ public class BattleHandler : MonoBehaviour
             playerHealthBarTransform.Insert(i, Instantiate(pfHealthBar, players[i].position + new Vector3(0f, 1f, 0f), Quaternion.identity, players[i]));
             playerHealthBar.Insert(i, playerHealthBarTransform[i].GetComponent<HealthBar>());
             playerHealthBar[i].Setup(playerHealth[i]);
-            Instantiate(playerSelect, players[i].position + new Vector3(0f, -0.65f, 0f), Quaternion.identity, players[i]);
+            playerSelectTransform.Insert(i, Instantiate(playerSelect, players[i].position + new Vector3(0f, -1f, 0f), Quaternion.identity, players[i]));
+            playerSelectTransform[i].SetActive(false);
             GenerateInitiative<PlayerBattle>(numOfPlayers, i);
         }
         else
@@ -88,6 +94,8 @@ public class BattleHandler : MonoBehaviour
             enemyHealthBarTransform.Insert(i, Instantiate(pfHealthBar, enemies[i].position + new Vector3(0f, 1.15f, 0f), Quaternion.identity, enemies[i]));
             enemyHealthBar.Insert(i, enemyHealthBarTransform[i].GetComponent<HealthBar>());
             enemyHealthBar[i].Setup(enemyHealth[i]);
+            enemySelectTransform.Insert(i, Instantiate(enemySelect, enemies[i].position + new Vector3(0f, -1f, 0f), Quaternion.identity, enemies[i]));
+            enemySelectTransform[i].SetActive(false);
             GenerateInitiative<EnemyBattle>(numOfEnemies, i);
         }
     }
@@ -98,13 +106,17 @@ public class BattleHandler : MonoBehaviour
         {
             PlayerBattle aP = (PlayerBattle)(object)activeEntity;
             aP.SetState(true);
+            activePlayerNum = aP.GetPlayerNum();
             active = Active.Player;
+            playerSelectTransform[activePlayerNum].SetActive(true);
         }
         else if (typeof(T) == typeof(EnemyBattle))
         {
             EnemyBattle aE = (EnemyBattle)(object)activeEntity;
             aE.SetState(true);
+            activeEnemyNum = aE.GetEnemyNum();
             active = Active.Enemy;
+            enemySelectTransform[activeEnemyNum].SetActive(true);
         }
     }
 
@@ -112,13 +124,13 @@ public class BattleHandler : MonoBehaviour
     {
         if (active == Active.Player)
         {
-            // SetActiveEnemy(enemies[0]);
+            playerSelectTransform[activePlayerNum].SetActive(false);
             SetActive<EnemyBattle>(enemies[0].GetComponent<EnemyBattle>());
             enemies[0].GetComponent<EnemyBattle>().Attack();
         }
         else
         {
-            // SetActivePlayer(players[0]);
+            enemySelectTransform[activeEnemyNum].SetActive(false);
             SetActive<PlayerBattle>(players[0].GetComponent<PlayerBattle>());
         }
     }
@@ -147,22 +159,6 @@ public class BattleHandler : MonoBehaviour
             damageText.GetComponentInChildren<TextMeshPro>().text = text;
         }
     }
-
-    // private Vector3 GetPos(bool isEnemy, int num)
-    // {
-    //     Vector3 pos;
-
-    //     if (isEnemy)
-    //     {
-    //         pos = enemies[num].GetComponent<Transform>().position + new Vector3(0f, 1.15f, 0f);
-    //     }
-    //     else
-    //     {
-    //         pos = players[num].GetComponent<Transform>().position + new Vector3(0f, 1f, 0f);
-    //     }
-
-    //     return pos;
-    // }
 
     public string GetActive()
     {

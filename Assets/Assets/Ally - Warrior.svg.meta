@@ -32,10 +32,10 @@ ScriptedImporter:
   textureWidth: 256
   textureHeight: 256
   wrapMode: 0
-  filterMode: 1
-  sampleCount: 4
+  filterMode: 0
+  sampleCount: 8
   preserveSVGImageAspect: 0
-  useSVGPixelsPerUnit: 0
+  useSVGPixelsPerUnit: 1
   spriteData:
     TessellationDetail: 0
     SpriteRect:
