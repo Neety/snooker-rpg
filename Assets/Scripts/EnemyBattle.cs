@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,18 +8,19 @@ public class EnemyBattle : MonoBehaviour
     [SerializeField] private float power;
     [SerializeField] private Vector2 minPower, maxPower;
     [SerializeField] private Vector3 charOffset;
-    [SerializeField] private Transform select;
     private Vector2 force;
     private Vector3 playerPos, enemyPos;
     private int initiative, enemyNum;
     private Rigidbody2D enemyBody;
     private BattleHandler battleSystem;
     private GameHandler gameHandler;
-    private bool active, hit;
+    private bool active, hit, enter;
+    public event EventHandler triggerNextTurn;
 
     private void Start()
     {
         this.hit = false;
+        this.enter = false;
         this.enemyBody = GetComponent<Rigidbody2D>();
         battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleHandler>();
         gameHandler = GameObject.FindGameObjectWithTag("GameHandler").GetComponent<GameHandler>();
@@ -58,7 +60,7 @@ public class EnemyBattle : MonoBehaviour
 
     private int Damage()
     {
-        return (int)Mathf.Ceil(this.enemyBody.velocity.magnitude) * 5;
+        return (int)Mathf.Ceil(this.enemyBody.velocity.magnitude);
     }
 
     public int GetInitiative()
@@ -92,6 +94,14 @@ public class EnemyBattle : MonoBehaviour
         return this.active;
     }
 
+    private IEnumerator TurnDelay()
+    {
+        this.enter = true;
+        yield return new WaitForSeconds(1f);
+        triggerNextTurn?.Invoke(this, EventArgs.Empty);
+        this.enter = false;
+    }
+
     private void FixedUpdate()
     {
         if (this.active == true)
@@ -102,17 +112,10 @@ public class EnemyBattle : MonoBehaviour
                 {
                     this.enemyBody.velocity = Vector3.zero;
                     this.active = false;
+                    this.hit = false;
+                    if (this.enter == false) StartCoroutine(TurnDelay());
                 }
             }
-        }
-    }
-
-    private void LateUpdate()
-    {
-        if (this.hit == true && this.active == false)
-        {
-            battleSystem.NextActive();
-            this.hit = false;
         }
     }
 }

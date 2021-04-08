@@ -1,8 +1,9 @@
+using TMPro;
+using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
-using System.Linq;
 
 public class BattleHandler : MonoBehaviour
 {
@@ -29,7 +30,8 @@ public class BattleHandler : MonoBehaviour
     private List<HealthBar> enemyHealthBar = new List<HealthBar>();
     private List<Transform> enemyHealthBarTransform = new List<Transform>();
     private List<GameObject> enemySelectTransform = new List<GameObject>();
-
+    private PlayerBattle playerBattle;
+    private EnemyBattle enemyBattle;
 
     private Active active;
     private enum Active
@@ -59,13 +61,19 @@ public class BattleHandler : MonoBehaviour
         players = players.OrderBy(p => p.GetComponent<PlayerBattle>().GetInitiative()).ToList();
         enemies = enemies.OrderBy(e => e.GetComponent<EnemyBattle>().GetInitiative()).ToList();
 
-        for (int i = 0; i < 3; i++)
-        {
-            Debug.Log("Player: " + i + " " + players[i].GetComponent<PlayerBattle>().GetInitiative());
-            Debug.Log("Enemy: " + i + " " + enemies[i].GetComponent<EnemyBattle>().GetInitiative());
-        }
+        // for (int i = 0; i < 3; i++)
+        // {
+        //     Debug.Log("Player: " + i + " " + players[i].GetComponent<PlayerBattle>().GetInitiative());
+        //     Debug.Log("Enemy: " + i + " " + enemies[i].GetComponent<EnemyBattle>().GetInitiative());
+        // }
 
         SetActive<PlayerBattle>(players[0].GetComponent<PlayerBattle>());
+
+        playerBattle = players[0].GetComponent<PlayerBattle>();
+        playerBattle.triggerNextTurn += NextActive;
+
+        enemyBattle = enemies[0].GetComponent<EnemyBattle>();
+        enemyBattle.triggerNextTurn += NextActive;
     }
 
     private void SpawnCharacter(bool isPlayerTeam, int i)
@@ -74,27 +82,27 @@ public class BattleHandler : MonoBehaviour
 
         if (isPlayerTeam)
         {
-            position = new Vector3(Random.Range(-8f, -4f), Random.Range(-4f, 0), 0);
+            position = new Vector3(UnityEngine.Random.Range(-96f, -48f), UnityEngine.Random.Range(-48f, 0), 0);
             players.Insert(i, Instantiate(pfPlayer, position, Quaternion.identity));
             players[i].GetComponent<PlayerBattle>().SetPlayerNum(i);
             playerHealth.Insert(i, new Health(100));
-            playerHealthBarTransform.Insert(i, Instantiate(pfHealthBar, players[i].position + new Vector3(0f, 1f, 0f), Quaternion.identity, players[i]));
+            playerHealthBarTransform.Insert(i, Instantiate(pfHealthBar, players[i].position + new Vector3(0f, 6.5f, 0f), Quaternion.identity, players[i]));
             playerHealthBar.Insert(i, playerHealthBarTransform[i].GetComponent<HealthBar>());
             playerHealthBar[i].Setup(playerHealth[i]);
-            playerSelectTransform.Insert(i, Instantiate(playerSelect, players[i].position + new Vector3(0f, -1f, 0f), Quaternion.identity, players[i]));
+            playerSelectTransform.Insert(i, Instantiate(playerSelect, players[i].position + new Vector3(0f, -6f, 0f), Quaternion.identity, players[i]));
             playerSelectTransform[i].SetActive(false);
             GenerateInitiative<PlayerBattle>(numOfPlayers, i);
         }
         else
         {
-            position = new Vector3(Random.Range(4f, 8f), Random.Range(0, 4f), 0);
+            position = new Vector3(UnityEngine.Random.Range(48f, 96f), UnityEngine.Random.Range(0, 48f), 0);
             enemies.Insert(i, Instantiate(pfEnemy, position, Quaternion.identity));
             enemies[i].GetComponent<EnemyBattle>().SetEnemyNum(i);
             enemyHealth.Insert(i, new Health(100));
-            enemyHealthBarTransform.Insert(i, Instantiate(pfHealthBar, enemies[i].position + new Vector3(0f, 1.15f, 0f), Quaternion.identity, enemies[i]));
+            enemyHealthBarTransform.Insert(i, Instantiate(pfHealthBar, enemies[i].position + new Vector3(0f, 8.5f, 0f), Quaternion.identity, enemies[i]));
             enemyHealthBar.Insert(i, enemyHealthBarTransform[i].GetComponent<HealthBar>());
             enemyHealthBar[i].Setup(enemyHealth[i]);
-            enemySelectTransform.Insert(i, Instantiate(enemySelect, enemies[i].position + new Vector3(0f, -1f, 0f), Quaternion.identity, enemies[i]));
+            enemySelectTransform.Insert(i, Instantiate(enemySelect, enemies[i].position + new Vector3(0f, -8f, 0f), Quaternion.identity, enemies[i]));
             enemySelectTransform[i].SetActive(false);
             GenerateInitiative<EnemyBattle>(numOfEnemies, i);
         }
@@ -110,7 +118,7 @@ public class BattleHandler : MonoBehaviour
             active = Active.Player;
             playerSelectTransform[activePlayerNum].SetActive(true);
         }
-        else if (typeof(T) == typeof(EnemyBattle))
+        else
         {
             EnemyBattle aE = (EnemyBattle)(object)activeEntity;
             aE.SetState(true);
@@ -120,7 +128,7 @@ public class BattleHandler : MonoBehaviour
         }
     }
 
-    public void NextActive()
+    private void NextActive(object sender, EventArgs e)
     {
         if (active == Active.Player)
         {
@@ -140,12 +148,12 @@ public class BattleHandler : MonoBehaviour
         if (isEnemy)
         {
             enemyHealth[num].Damage(damage);
-            ShowDamage(damage.ToString(), pos + new Vector3(0f, 1.15f, 0f));
+            ShowDamage(damage.ToString(), pos + new Vector3(0f, 8.5f, 0f));
         }
         else
         {
             playerHealth[num].Damage(damage);
-            ShowDamage(damage.ToString(), pos + new Vector3(0f, 1f, 0f));
+            ShowDamage(damage.ToString(), pos + new Vector3(0f, 6.5f, 0f));
         }
     }
 
@@ -169,13 +177,13 @@ public class BattleHandler : MonoBehaviour
     {
         int init;
 
-        init = Random.Range(10, numOfInits * 10 + 1);
+        init = UnityEngine.Random.Range(10, numOfInits * 10 + 1);
 
         if (typeof(T) == typeof(PlayerBattle))
         {
             while (players.Any(p => p.GetComponent<PlayerBattle>().GetInitiative() == init))
             {
-                init = Random.Range(10, numOfInits * 10 + 1);
+                init = UnityEngine.Random.Range(10, numOfInits * 10 + 1);
             }
 
             players[i].GetComponent<PlayerBattle>().SetInitiative(init);
@@ -184,7 +192,7 @@ public class BattleHandler : MonoBehaviour
         {
             while (enemies.Any(e => e.GetComponent<EnemyBattle>().GetInitiative() == init))
             {
-                init = Random.Range(10, numOfInits * 10 + 1);
+                init = UnityEngine.Random.Range(10, numOfInits * 10 + 1);
             }
 
             enemies[i].GetComponent<EnemyBattle>().SetInitiative(init);

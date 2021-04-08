@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,11 +19,13 @@ public class PlayerBattle : MonoBehaviour
     private GameHandler gameHandler;
     private float dist;
     private string state;
-    private bool active, hit;
+    private bool active, hit, enter;
+    public event EventHandler triggerNextTurn;
 
     private void Start()
     {
         this.hit = false;
+        this.enter = false;
         this.trajectoryLine = GetComponent<TrajectoryLineV2>();
         this.playerBody = GetComponent<Rigidbody2D>();
         battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleHandler>();
@@ -36,7 +39,7 @@ public class PlayerBattle : MonoBehaviour
             this.lineStart = this.transform.position + this.charOffset;
             this.currentPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition) + camOffset;
             this.dir = this.currentPoint - this.lineStart;
-            this.dist = Vector3.Distance(this.currentPoint, this.lineStart);
+            this.dist = Mathf.Clamp(Vector3.Distance(this.currentPoint, this.lineStart), 0f, 25f);
             this.lineEnd = this.lineStart + this.dir.normalized * this.dist * -1;
             this.trajectoryLine.RenderLine(this.lineStart, this.lineEnd);
         }
@@ -76,7 +79,7 @@ public class PlayerBattle : MonoBehaviour
 
     private int Damage()
     {
-        return (int)Mathf.Ceil(this.playerBody.velocity.magnitude) * 5;
+        return (int)Mathf.Ceil(this.playerBody.velocity.magnitude);
     }
 
     public int GetInitiative()
@@ -111,6 +114,14 @@ public class PlayerBattle : MonoBehaviour
         return this.active;
     }
 
+    private IEnumerator TurnDelay()
+    {
+        this.enter = true;
+        yield return new WaitForSeconds(1f);
+        triggerNextTurn?.Invoke(this, EventArgs.Empty);
+        this.enter = false;
+    }
+
     private void FixedUpdate()
     {
         if (this.active == true)
@@ -121,17 +132,10 @@ public class PlayerBattle : MonoBehaviour
                 {
                     this.playerBody.velocity = Vector3.zero;
                     this.active = false;
+                    this.hit = false;
+                    if (this.enter == false) StartCoroutine(TurnDelay());
                 }
             }
-        }
-    }
-
-    private void LateUpdate()
-    {
-        if (this.hit == true && this.active == false)
-        {
-            battleSystem.NextActive();
-            this.hit = false;
         }
     }
 }

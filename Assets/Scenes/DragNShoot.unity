@@ -350,7 +350,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -365,9 +365,9 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 1.2
   orthographic: 1
-  orthographic size: 10.627468
+  orthographic size: 51.303623
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -434,7 +434,7 @@ MonoBehaviour:
     type: 3}
   enemySelect: {fileID: 1457664989480407433, guid: f14c535541609e24095c563be07d8158,
     type: 3}
-  pfDamageText: {fileID: 4183064016404054479, guid: 96eb7516f4a44964fb26783a95fb7268,
+  pfDamageText: {fileID: 7121660276855642999, guid: 5eec24fb371e6e145b71f47bc2854316,
     type: 3}
 --- !u!4 &1355593850
 Transform:

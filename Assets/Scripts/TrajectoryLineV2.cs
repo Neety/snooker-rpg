@@ -18,7 +18,7 @@ public class TrajectoryLineV2 : MonoBehaviour
         lineRenderer.positionCount = 2;
         Vector3[] points = new Vector3[2];
         points[0] = startPoint;
-        points[1] = Vector3.MoveTowards(startPoint, endPoint, 3f);
+        points[1] = Vector3.MoveTowards(startPoint, endPoint, 25f);
         lineRenderer.SetPositions(points);
 
         float fade = Mathf.Clamp(Vector2.Distance(startPoint, endPoint), 0f, 3f) / 100 * 7;
