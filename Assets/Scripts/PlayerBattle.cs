@@ -12,20 +12,21 @@ public class PlayerBattle : MonoBehaviour
     private Vector2 force, minVel;
     private Vector3 currentPoint, lineStart, lineEnd, dir;
     private Vector3 camOffset = new Vector3(0, 0, 10);
-    private int initiative, playerNum;
+    private int startInitiative, currIntiative, playerNum;
     private Rigidbody2D playerBody;
     private TrajectoryLineV2 trajectoryLine;
     private BattleHandler battleSystem;
     private GameHandler gameHandler;
     private float dist;
     private string state;
-    private bool active, hit, enter;
+    private bool active, hit, enter, start;
     public event EventHandler triggerNextTurn;
 
     private void Start()
     {
         this.hit = false;
         this.enter = false;
+        this.start = false;
         this.trajectoryLine = GetComponent<TrajectoryLineV2>();
         this.playerBody = GetComponent<Rigidbody2D>();
         battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleHandler>();
@@ -39,7 +40,7 @@ public class PlayerBattle : MonoBehaviour
             this.lineStart = this.transform.position + this.charOffset;
             this.currentPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition) + camOffset;
             this.dir = this.currentPoint - this.lineStart;
-            this.dist = Mathf.Clamp(Vector3.Distance(this.currentPoint, this.lineStart), 0f, 25f);
+            this.dist = Vector3.Distance(this.currentPoint, this.lineStart);
             this.lineEnd = this.lineStart + this.dir.normalized * this.dist * -1;
             this.trajectoryLine.RenderLine(this.lineStart, this.lineEnd);
         }
@@ -70,7 +71,7 @@ public class PlayerBattle : MonoBehaviour
             {
                 if (this.active == true)
                 {
-                    battleSystem.doDamage(Damage(), true, other.gameObject.GetComponent<EnemyBattle>().GetEnemyNum(), other.gameObject.GetComponent<Transform>().position);
+                    battleSystem.doDamage(Damage(), true, other.gameObject.GetComponent<EnemyBattle>().GetEnemyNum(), other.gameObject.transform.Find("HealthBar").transform.position);
 
                 }
             }
@@ -82,13 +83,23 @@ public class PlayerBattle : MonoBehaviour
         return (int)Mathf.Ceil(this.playerBody.velocity.magnitude);
     }
 
-    public int GetInitiative()
+    public int GetInitiative(bool start)
     {
-        return this.initiative;
+        if (start == true)
+            return this.startInitiative;
+        else
+            return this.currIntiative;
     }
     public void SetInitiative(int init)
     {
-        this.initiative = init;
+        if (start == false)
+        {
+            this.startInitiative = init;
+            this.currIntiative = this.startInitiative;
+            start = true;
+        }
+        else
+            this.currIntiative = init;
     }
     public int GetPlayerNum()
     {
@@ -99,7 +110,7 @@ public class PlayerBattle : MonoBehaviour
         this.playerNum = num;
     }
 
-    public void SetState(bool active)
+    public void SetActive(bool active)
     {
         if (active == true)
         {
@@ -109,7 +120,7 @@ public class PlayerBattle : MonoBehaviour
             this.active = false;
     }
 
-    public bool GetState()
+    public bool GetActive()
     {
         return this.active;
     }
@@ -133,6 +144,7 @@ public class PlayerBattle : MonoBehaviour
                     this.playerBody.velocity = Vector3.zero;
                     this.active = false;
                     this.hit = false;
+                    this.currIntiative = this.startInitiative;
                     if (this.enter == false) StartCoroutine(TurnDelay());
                 }
             }

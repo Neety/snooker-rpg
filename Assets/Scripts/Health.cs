@@ -1,14 +1,14 @@
 using System;
 using UnityEngine;
 
-public class Health
+public class Health : MonoBehaviour
 {
     public event EventHandler OnHealthChanged;
-    private int MaxHP, HP;
+    [SerializeField] private int MaxHP;
+    private int HP;
 
-    public Health(int MaxHP)
+    private void Start()
     {
-        this.MaxHP = MaxHP;
         this.HP = MaxHP;
     }
 

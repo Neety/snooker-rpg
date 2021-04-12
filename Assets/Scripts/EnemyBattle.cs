@@ -10,17 +10,18 @@ public class EnemyBattle : MonoBehaviour
     [SerializeField] private Vector3 charOffset;
     private Vector2 force;
     private Vector3 playerPos, enemyPos;
-    private int initiative, enemyNum;
+    private int startInitiative, currIntiative, enemyNum;
     private Rigidbody2D enemyBody;
     private BattleHandler battleSystem;
     private GameHandler gameHandler;
-    private bool active, hit, enter;
+    private bool active, hit, enter, start;
     public event EventHandler triggerNextTurn;
 
     private void Start()
     {
         this.hit = false;
         this.enter = false;
+        this.start = false;
         this.enemyBody = GetComponent<Rigidbody2D>();
         battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleHandler>();
         gameHandler = GameObject.FindGameObjectWithTag("GameHandler").GetComponent<GameHandler>();
@@ -51,7 +52,7 @@ public class EnemyBattle : MonoBehaviour
             {
                 if (this.active == true)
                 {
-                    battleSystem.doDamage(Damage(), false, other.gameObject.GetComponent<PlayerBattle>().GetPlayerNum(), other.gameObject.GetComponent<Transform>().position);
+                    battleSystem.doDamage(Damage(), false, other.gameObject.GetComponent<PlayerBattle>().GetPlayerNum(), other.gameObject.transform.Find("HealthBar").transform.position);
 
                 }
             }
@@ -63,13 +64,23 @@ public class EnemyBattle : MonoBehaviour
         return (int)Mathf.Ceil(this.enemyBody.velocity.magnitude);
     }
 
-    public int GetInitiative()
+    public int GetInitiative(bool start)
     {
-        return this.initiative;
+        if (start == true)
+            return this.startInitiative;
+        else
+            return this.currIntiative;
     }
     public void SetInitiative(int init)
     {
-        this.initiative = init;
+        if (start == false)
+        {
+            this.startInitiative = init;
+            this.currIntiative = this.startInitiative;
+            start = true;
+        }
+        else
+            this.currIntiative = init;
     }
     public int GetEnemyNum()
     {
@@ -79,7 +90,11 @@ public class EnemyBattle : MonoBehaviour
     {
         this.enemyNum = num;
     }
-    public void SetState(bool active)
+    public bool GetActive()
+    {
+        return this.active;
+    }
+    public void SetActive(bool active)
     {
         if (active == true)
         {
@@ -87,11 +102,6 @@ public class EnemyBattle : MonoBehaviour
         }
         else
             this.active = false;
-    }
-
-    public bool GetState()
-    {
-        return this.active;
     }
 
     private IEnumerator TurnDelay()
@@ -113,6 +123,7 @@ public class EnemyBattle : MonoBehaviour
                     this.enemyBody.velocity = Vector3.zero;
                     this.active = false;
                     this.hit = false;
+                    this.currIntiative = this.startInitiative;
                     if (this.enter == false) StartCoroutine(TurnDelay());
                 }
             }

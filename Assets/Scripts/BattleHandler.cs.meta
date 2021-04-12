@@ -8,7 +8,7 @@ MonoImporter:
       type: 3}
   - pfEnemy: {fileID: 1164584978734740201, guid: 265ac230ccd0a8941a55bde4a3bfa291,
       type: 3}
-  executionOrder: 0
+  executionOrder: 100
   icon: {instanceID: 0}
   userData: 
   assetBundleName: 

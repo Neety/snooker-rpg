@@ -12,24 +12,23 @@ public class BattleHandler : MonoBehaviour
     {
         return inst;
     }
-    [SerializeField] private Transform pfPlayer, pfEnemy, pfHealthBar;
-    [SerializeField] private GameObject playerSelect, enemySelect, pfDamageText;
+    [SerializeField] private GameObject pfPlayer, pfEnemy, pfDamageText;
 
     private int numOfPlayers;
     private int activePlayerNum;
-    private List<Transform> players = new List<Transform>();
-    private List<Health> playerHealth = new List<Health>();
-    private List<HealthBar> playerHealthBar = new List<HealthBar>();
-    private List<Transform> playerHealthBarTransform = new List<Transform>();
-    private List<GameObject> playerSelectTransform = new List<GameObject>();
+    private List<GameObject> players = new List<GameObject>();
+    // private List<Health> playerHealth = new List<Health>();
+    // private List<HealthBar> playerHealthBar = new List<HealthBar>();
+    // private List<Transform> playerHealthBarTransform = new List<Transform>();
+    // private List<GameObject> playerSelectTransform = new List<GameObject>();
 
     private int numOfEnemies;
     private int activeEnemyNum;
-    private List<Transform> enemies = new List<Transform>();
-    private List<Health> enemyHealth = new List<Health>();
-    private List<HealthBar> enemyHealthBar = new List<HealthBar>();
-    private List<Transform> enemyHealthBarTransform = new List<Transform>();
-    private List<GameObject> enemySelectTransform = new List<GameObject>();
+    private List<GameObject> enemies = new List<GameObject>();
+    // private List<Health> enemyHealth = new List<Health>();
+    // private List<HealthBar> enemyHealthBar = new List<HealthBar>();
+    // private List<Transform> enemyHealthBarTransform = new List<Transform>();
+    // private List<GameObject> enemySelectTransform = new List<GameObject>();
     private PlayerBattle playerBattle;
     private EnemyBattle enemyBattle;
 
@@ -58,14 +57,20 @@ public class BattleHandler : MonoBehaviour
             SpawnCharacter(false, i);
         }
 
-        players = players.OrderBy(p => p.GetComponent<PlayerBattle>().GetInitiative()).ToList();
-        enemies = enemies.OrderBy(e => e.GetComponent<EnemyBattle>().GetInitiative()).ToList();
+        players = players.OrderBy(p => p.GetComponent<PlayerBattle>().GetInitiative(true)).ToList();
+        enemies = enemies.OrderBy(e => e.GetComponent<EnemyBattle>().GetInitiative(true)).ToList();
 
-        // for (int i = 0; i < 3; i++)
-        // {
-        //     Debug.Log("Player: " + i + " " + players[i].GetComponent<PlayerBattle>().GetInitiative());
-        //     Debug.Log("Enemy: " + i + " " + enemies[i].GetComponent<EnemyBattle>().GetInitiative());
-        // }
+        for (int i = 0; i < 3; i++)
+        {
+            Debug.Log("Player: " + i + " " + players[i].GetComponent<PlayerBattle>().GetInitiative(true));
+
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            Debug.Log("Enemy: " + i + " " + enemies[i].GetComponent<EnemyBattle>().GetInitiative(true));
+
+        }
 
         SetActive<PlayerBattle>(players[0].GetComponent<PlayerBattle>());
 
@@ -82,28 +87,30 @@ public class BattleHandler : MonoBehaviour
 
         if (isPlayerTeam)
         {
-            position = new Vector3(UnityEngine.Random.Range(-96f, -48f), UnityEngine.Random.Range(-48f, 0), 0);
+            position = new Vector3(UnityEngine.Random.Range(-12f, -6f), UnityEngine.Random.Range(-8f, 0), 0);
             players.Insert(i, Instantiate(pfPlayer, position, Quaternion.identity));
             players[i].GetComponent<PlayerBattle>().SetPlayerNum(i);
-            playerHealth.Insert(i, new Health(100));
-            playerHealthBarTransform.Insert(i, Instantiate(pfHealthBar, players[i].position + new Vector3(0f, 6.5f, 0f), Quaternion.identity, players[i]));
-            playerHealthBar.Insert(i, playerHealthBarTransform[i].GetComponent<HealthBar>());
-            playerHealthBar[i].Setup(playerHealth[i]);
-            playerSelectTransform.Insert(i, Instantiate(playerSelect, players[i].position + new Vector3(0f, -6f, 0f), Quaternion.identity, players[i]));
-            playerSelectTransform[i].SetActive(false);
+            // playerHealth.Insert(i, new Health(100));
+            // playerHealthBarTransform.Insert(i, Instantiate(pfHealthBar, players[i].position + new Vector3(0f, 1f, 0f), Quaternion.identity, players[i]));
+            // playerHealthBar.Insert(i, playerHealthBarTransform[i].GetComponent<HealthBar>());
+            // playerHealthBar[i].Setup(playerHealth[i]);
+            // playerSelectTransform.Insert(i, Instantiate(playerSelect, players[i].position + new Vector3(0f, -1f, 0f), Quaternion.identity, players[i]));
+            // playerSelectTransform[i].SetActive(false);
+            players[i].GetComponentInChildren<HealthBar>().Setup(players[i].GetComponent<Health>());
             GenerateInitiative<PlayerBattle>(numOfPlayers, i);
         }
         else
         {
-            position = new Vector3(UnityEngine.Random.Range(48f, 96f), UnityEngine.Random.Range(0, 48f), 0);
+            position = new Vector3(UnityEngine.Random.Range(6f, 12f), UnityEngine.Random.Range(0, 8f), 0);
             enemies.Insert(i, Instantiate(pfEnemy, position, Quaternion.identity));
             enemies[i].GetComponent<EnemyBattle>().SetEnemyNum(i);
-            enemyHealth.Insert(i, new Health(100));
-            enemyHealthBarTransform.Insert(i, Instantiate(pfHealthBar, enemies[i].position + new Vector3(0f, 8.5f, 0f), Quaternion.identity, enemies[i]));
-            enemyHealthBar.Insert(i, enemyHealthBarTransform[i].GetComponent<HealthBar>());
-            enemyHealthBar[i].Setup(enemyHealth[i]);
-            enemySelectTransform.Insert(i, Instantiate(enemySelect, enemies[i].position + new Vector3(0f, -8f, 0f), Quaternion.identity, enemies[i]));
-            enemySelectTransform[i].SetActive(false);
+            // enemyHealth.Insert(i, new Health(100));
+            // enemyHealthBarTransform.Insert(i, Instantiate(pfHealthBar, enemies[i].position + new Vector3(0f, 1f, 0f), Quaternion.identity, enemies[i]));
+            // enemyHealthBar.Insert(i, enemyHealthBarTransform[i].GetComponent<HealthBar>());
+            // enemyHealthBar[i].Setup(enemyHealth[i]);
+            // enemySelectTransform.Insert(i, Instantiate(enemySelect, enemies[i].position + new Vector3(0f, -1f, 0f), Quaternion.identity, enemies[i]));
+            // enemySelectTransform[i].SetActive(false);
+            enemies[i].GetComponentInChildren<HealthBar>().Setup(enemies[i].GetComponent<Health>());
             GenerateInitiative<EnemyBattle>(numOfEnemies, i);
         }
     }
@@ -112,19 +119,49 @@ public class BattleHandler : MonoBehaviour
     {
         if (typeof(T) == typeof(PlayerBattle))
         {
-            PlayerBattle aP = (PlayerBattle)(object)activeEntity;
-            aP.SetState(true);
-            activePlayerNum = aP.GetPlayerNum();
             active = Active.Player;
-            playerSelectTransform[activePlayerNum].SetActive(true);
+
+            PlayerBattle activePlayer = (PlayerBattle)(object)activeEntity;
+            activePlayer.SetActive(true);
+            activePlayerNum = activePlayer.GetPlayerNum();
+            int initativeDiff = activePlayer.GetInitiative(false);
+
+            for (int i = 0; i < numOfPlayers; i++)
+            {
+                players[i].GetComponent<PlayerBattle>().SetInitiative(players[i].GetComponent<PlayerBattle>().GetInitiative(false) - initativeDiff);
+            }
+
+            players = players.OrderBy(p => p.GetComponent<PlayerBattle>().GetInitiative(false)).ToList();
+
+            for (int i = 0; i < numOfPlayers; i++)
+            {
+                Debug.Log("Player: " + players[i].GetComponent<PlayerBattle>().GetInitiative(false));
+            }
+
+            players[0].transform.Find("PlayerSelect").gameObject.SetActive(true);
         }
         else
         {
-            EnemyBattle aE = (EnemyBattle)(object)activeEntity;
-            aE.SetState(true);
-            activeEnemyNum = aE.GetEnemyNum();
             active = Active.Enemy;
-            enemySelectTransform[activeEnemyNum].SetActive(true);
+
+            EnemyBattle activeEnemy = (EnemyBattle)(object)activeEntity;
+            activeEnemy.SetActive(true);
+            activeEnemyNum = activeEnemy.GetEnemyNum();
+            int initativeDiff = activeEnemy.GetInitiative(false);
+
+            for (int i = 0; i < numOfEnemies; i++)
+            {
+                enemies[i].GetComponent<EnemyBattle>().SetInitiative(enemies[i].GetComponent<EnemyBattle>().GetInitiative(false) - initativeDiff);
+            }
+
+            enemies = enemies.OrderBy(e => e.GetComponent<EnemyBattle>().GetInitiative(false)).ToList();
+
+            for (int i = 0; i < numOfPlayers; i++)
+            {
+                Debug.Log("Enemy: " + enemies[i].GetComponent<EnemyBattle>().GetInitiative(false));
+            }
+
+            enemies[0].transform.Find("EnemySelect").gameObject.SetActive(true);
         }
     }
 
@@ -132,13 +169,14 @@ public class BattleHandler : MonoBehaviour
     {
         if (active == Active.Player)
         {
-            playerSelectTransform[activePlayerNum].SetActive(false);
+            players[0].transform.Find("PlayerSelect").gameObject.SetActive(false);
             SetActive<EnemyBattle>(enemies[0].GetComponent<EnemyBattle>());
             enemies[0].GetComponent<EnemyBattle>().Attack();
+
         }
         else
         {
-            enemySelectTransform[activeEnemyNum].SetActive(false);
+            enemies[0].transform.Find("EnemySelect").gameObject.SetActive(false);
             SetActive<PlayerBattle>(players[0].GetComponent<PlayerBattle>());
         }
     }
@@ -147,13 +185,25 @@ public class BattleHandler : MonoBehaviour
     {
         if (isEnemy)
         {
-            enemyHealth[num].Damage(damage);
-            ShowDamage(damage.ToString(), pos + new Vector3(0f, 8.5f, 0f));
+            foreach (GameObject enemy in enemies)
+            {
+                if (enemy.GetComponent<EnemyBattle>().GetEnemyNum() == num)
+                {
+                    enemies[enemies.IndexOf(enemy)].GetComponent<Health>().Damage(damage);
+                    ShowDamage(damage.ToString(), pos);
+                }
+            }
         }
         else
         {
-            playerHealth[num].Damage(damage);
-            ShowDamage(damage.ToString(), pos + new Vector3(0f, 6.5f, 0f));
+            foreach (GameObject player in players)
+            {
+                if (player.GetComponent<PlayerBattle>().GetPlayerNum() == num)
+                {
+                    players[players.IndexOf(player)].GetComponent<Health>().Damage(damage);
+                    ShowDamage(damage.ToString(), pos);
+                }
+            }
         }
     }
 
@@ -181,7 +231,7 @@ public class BattleHandler : MonoBehaviour
 
         if (typeof(T) == typeof(PlayerBattle))
         {
-            while (players.Any(p => p.GetComponent<PlayerBattle>().GetInitiative() == init))
+            while (players.Any(p => p.GetComponent<PlayerBattle>().GetInitiative(false) == init || enemies.Any(e => e.GetComponent<EnemyBattle>().GetInitiative(false) == init)))
             {
                 init = UnityEngine.Random.Range(10, numOfInits * 10 + 1);
             }
@@ -190,7 +240,7 @@ public class BattleHandler : MonoBehaviour
         }
         else
         {
-            while (enemies.Any(e => e.GetComponent<EnemyBattle>().GetInitiative() == init))
+            while (enemies.Any(e => e.GetComponent<EnemyBattle>().GetInitiative(false) == init || players.Any(p => p.GetComponent<PlayerBattle>().GetInitiative(false) == init)))
             {
                 init = UnityEngine.Random.Range(10, numOfInits * 10 + 1);
             }
