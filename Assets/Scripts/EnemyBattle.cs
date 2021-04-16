@@ -14,14 +14,13 @@ public class EnemyBattle : MonoBehaviour
     private Rigidbody2D enemyBody;
     private BattleHandler battleSystem;
     private GameHandler gameHandler;
-    private bool active, hit, enter, start;
+    private bool active, hit, enter, start, dead;
     public event EventHandler triggerNextTurn;
 
     private void Start()
     {
         this.hit = false;
         this.enter = false;
-        this.start = false;
         this.enemyBody = GetComponent<Rigidbody2D>();
         battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleHandler>();
         gameHandler = GameObject.FindGameObjectWithTag("GameHandler").GetComponent<GameHandler>();
@@ -59,6 +58,21 @@ public class EnemyBattle : MonoBehaviour
         }
     }
 
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        ProcessTrigger(other.gameObject);
+
+        Debug.Log("Destroyed");
+    }
+
+    private void ProcessTrigger(GameObject other)
+    {
+        if (other.CompareTag("Map"))
+        {
+            this.dead = true;
+        }
+    }
+
     private int Damage()
     {
         return (int)Mathf.Ceil(this.enemyBody.velocity.magnitude);
@@ -71,13 +85,12 @@ public class EnemyBattle : MonoBehaviour
         else
             return this.currIntiative;
     }
-    public void SetInitiative(int init)
+    public void SetInitiative(int init, bool start)
     {
-        if (start == false)
+        if (start == true)
         {
             this.startInitiative = init;
             this.currIntiative = this.startInitiative;
-            start = true;
         }
         else
             this.currIntiative = init;
@@ -107,7 +120,8 @@ public class EnemyBattle : MonoBehaviour
     private IEnumerator TurnDelay()
     {
         this.enter = true;
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
+        this.transform.Find("EnemySelect").gameObject.SetActive(false);
         triggerNextTurn?.Invoke(this, EventArgs.Empty);
         this.enter = false;
     }
@@ -121,10 +135,36 @@ public class EnemyBattle : MonoBehaviour
                 if (this.enemyBody.velocity.magnitude < 0.2f)
                 {
                     this.enemyBody.velocity = Vector3.zero;
-                    this.active = false;
-                    this.hit = false;
-                    this.currIntiative = this.startInitiative;
-                    if (this.enter == false) StartCoroutine(TurnDelay());
+
+                    if (this.dead == true)
+                    {
+                        this.gameObject.SetActive(false);
+                        battleSystem.DestroyEntity<EnemyBattle>(GetEnemyNum());
+                        battleSystem.OrderList(true);
+                        StartCoroutine(battleSystem.TurnDelay());
+                        triggerNextTurn?.Invoke(this, EventArgs.Empty);
+                    }
+                    else
+                    {
+                        this.active = false;
+                        this.hit = false;
+                        this.currIntiative = this.startInitiative;
+                        battleSystem.OrderList(true);
+                        if (this.enter == false) StartCoroutine(TurnDelay());
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (this.enemyBody.velocity.magnitude < 0.2f)
+            {
+                if (this.dead == true)
+                {
+                    this.enemyBody.velocity = Vector3.zero;
+                    this.gameObject.SetActive(false);
+                    battleSystem.DestroyEntity<EnemyBattle>(GetEnemyNum());
+                    battleSystem.OrderList(true);
                 }
             }
         }

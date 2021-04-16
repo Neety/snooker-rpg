@@ -12,6 +12,7 @@ TagManager:
   - BattleSystem
   - HealthBar
   - GameHandler
+  - Map
   layers:
   - Default
   - TransparentFX

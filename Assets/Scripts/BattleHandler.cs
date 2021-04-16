@@ -29,8 +29,9 @@ public class BattleHandler : MonoBehaviour
     // private List<HealthBar> enemyHealthBar = new List<HealthBar>();
     // private List<Transform> enemyHealthBarTransform = new List<Transform>();
     // private List<GameObject> enemySelectTransform = new List<GameObject>();
-    private PlayerBattle playerBattle;
-    private EnemyBattle enemyBattle;
+    private PlayerBattle playerBattle, activePlayer;
+    private EnemyBattle enemyBattle, activeEnemy;
+    int playerStartInitiative, enemyStartInitiative;
 
     private Active active;
     private enum Active
@@ -60,25 +61,18 @@ public class BattleHandler : MonoBehaviour
         players = players.OrderBy(p => p.GetComponent<PlayerBattle>().GetInitiative(true)).ToList();
         enemies = enemies.OrderBy(e => e.GetComponent<EnemyBattle>().GetInitiative(true)).ToList();
 
-        for (int i = 0; i < 3; i++)
-        {
-            Debug.Log("Player: " + i + " " + players[i].GetComponent<PlayerBattle>().GetInitiative(true));
-
-        }
-
-        for (int i = 0; i < 3; i++)
-        {
-            Debug.Log("Enemy: " + i + " " + enemies[i].GetComponent<EnemyBattle>().GetInitiative(true));
-
-        }
-
         SetActive<PlayerBattle>(players[0].GetComponent<PlayerBattle>());
 
-        playerBattle = players[0].GetComponent<PlayerBattle>();
-        playerBattle.triggerNextTurn += NextActive;
+        foreach (GameObject player in players)
+        {
+            player.GetComponent<PlayerBattle>().triggerNextTurn += NextActive;
+        }
 
-        enemyBattle = enemies[0].GetComponent<EnemyBattle>();
-        enemyBattle.triggerNextTurn += NextActive;
+        foreach (GameObject enemy in enemies)
+        {
+            enemy.GetComponent<EnemyBattle>().triggerNextTurn += NextActive;
+        }
+
     }
 
     private void SpawnCharacter(bool isPlayerTeam, int i)
@@ -90,28 +84,28 @@ public class BattleHandler : MonoBehaviour
             position = new Vector3(UnityEngine.Random.Range(-12f, -6f), UnityEngine.Random.Range(-8f, 0), 0);
             players.Insert(i, Instantiate(pfPlayer, position, Quaternion.identity));
             players[i].GetComponent<PlayerBattle>().SetPlayerNum(i);
+            players[i].GetComponentInChildren<HealthBar>().Setup(players[i].GetComponent<Health>());
+            GenerateInitiative<PlayerBattle>(numOfPlayers, i);
             // playerHealth.Insert(i, new Health(100));
             // playerHealthBarTransform.Insert(i, Instantiate(pfHealthBar, players[i].position + new Vector3(0f, 1f, 0f), Quaternion.identity, players[i]));
             // playerHealthBar.Insert(i, playerHealthBarTransform[i].GetComponent<HealthBar>());
             // playerHealthBar[i].Setup(playerHealth[i]);
             // playerSelectTransform.Insert(i, Instantiate(playerSelect, players[i].position + new Vector3(0f, -1f, 0f), Quaternion.identity, players[i]));
             // playerSelectTransform[i].SetActive(false);
-            players[i].GetComponentInChildren<HealthBar>().Setup(players[i].GetComponent<Health>());
-            GenerateInitiative<PlayerBattle>(numOfPlayers, i);
         }
         else
         {
             position = new Vector3(UnityEngine.Random.Range(6f, 12f), UnityEngine.Random.Range(0, 8f), 0);
             enemies.Insert(i, Instantiate(pfEnemy, position, Quaternion.identity));
             enemies[i].GetComponent<EnemyBattle>().SetEnemyNum(i);
+            enemies[i].GetComponentInChildren<HealthBar>().Setup(enemies[i].GetComponent<Health>());
+            GenerateInitiative<EnemyBattle>(numOfEnemies, i);
             // enemyHealth.Insert(i, new Health(100));
             // enemyHealthBarTransform.Insert(i, Instantiate(pfHealthBar, enemies[i].position + new Vector3(0f, 1f, 0f), Quaternion.identity, enemies[i]));
             // enemyHealthBar.Insert(i, enemyHealthBarTransform[i].GetComponent<HealthBar>());
             // enemyHealthBar[i].Setup(enemyHealth[i]);
             // enemySelectTransform.Insert(i, Instantiate(enemySelect, enemies[i].position + new Vector3(0f, -1f, 0f), Quaternion.identity, enemies[i]));
             // enemySelectTransform[i].SetActive(false);
-            enemies[i].GetComponentInChildren<HealthBar>().Setup(enemies[i].GetComponent<Health>());
-            GenerateInitiative<EnemyBattle>(numOfEnemies, i);
         }
     }
 
@@ -121,21 +115,18 @@ public class BattleHandler : MonoBehaviour
         {
             active = Active.Player;
 
-            PlayerBattle activePlayer = (PlayerBattle)(object)activeEntity;
+            activePlayer = (PlayerBattle)(object)activeEntity;
+            Debug.Log("Set Active Player");
             activePlayer.SetActive(true);
-            activePlayerNum = activePlayer.GetPlayerNum();
+            int playerStartInitiative = activePlayer.GetInitiative(true);
             int initativeDiff = activePlayer.GetInitiative(false);
 
-            for (int i = 0; i < numOfPlayers; i++)
+            int currInitiative;
+            foreach (GameObject player in players)
             {
-                players[i].GetComponent<PlayerBattle>().SetInitiative(players[i].GetComponent<PlayerBattle>().GetInitiative(false) - initativeDiff);
-            }
-
-            players = players.OrderBy(p => p.GetComponent<PlayerBattle>().GetInitiative(false)).ToList();
-
-            for (int i = 0; i < numOfPlayers; i++)
-            {
-                Debug.Log("Player: " + players[i].GetComponent<PlayerBattle>().GetInitiative(false));
+                currInitiative = player.GetComponent<PlayerBattle>().GetInitiative(false);
+                player.GetComponent<PlayerBattle>().SetInitiative(currInitiative - initativeDiff, false);
+                // Debug.Log("Player Current Initiative: " + player.GetComponent<PlayerBattle>().GetInitiative(false));
             }
 
             players[0].transform.Find("PlayerSelect").gameObject.SetActive(true);
@@ -144,21 +135,18 @@ public class BattleHandler : MonoBehaviour
         {
             active = Active.Enemy;
 
-            EnemyBattle activeEnemy = (EnemyBattle)(object)activeEntity;
+            activeEnemy = (EnemyBattle)(object)activeEntity;
+            Debug.Log("Set Active Enemy");
             activeEnemy.SetActive(true);
-            activeEnemyNum = activeEnemy.GetEnemyNum();
+            int enemyStartInitiative = activeEnemy.GetInitiative(true);
             int initativeDiff = activeEnemy.GetInitiative(false);
 
-            for (int i = 0; i < numOfEnemies; i++)
+            int currInitiative;
+            foreach (GameObject enemy in enemies)
             {
-                enemies[i].GetComponent<EnemyBattle>().SetInitiative(enemies[i].GetComponent<EnemyBattle>().GetInitiative(false) - initativeDiff);
-            }
-
-            enemies = enemies.OrderBy(e => e.GetComponent<EnemyBattle>().GetInitiative(false)).ToList();
-
-            for (int i = 0; i < numOfPlayers; i++)
-            {
-                Debug.Log("Enemy: " + enemies[i].GetComponent<EnemyBattle>().GetInitiative(false));
+                currInitiative = enemy.GetComponent<EnemyBattle>().GetInitiative(false);
+                enemy.GetComponent<EnemyBattle>().SetInitiative(currInitiative - initativeDiff, false);
+                // Debug.Log("Enemy Current Initiative: " + enemy.GetComponent<EnemyBattle>().GetInitiative(false));
             }
 
             enemies[0].transform.Find("EnemySelect").gameObject.SetActive(true);
@@ -169,14 +157,11 @@ public class BattleHandler : MonoBehaviour
     {
         if (active == Active.Player)
         {
-            players[0].transform.Find("PlayerSelect").gameObject.SetActive(false);
             SetActive<EnemyBattle>(enemies[0].GetComponent<EnemyBattle>());
             enemies[0].GetComponent<EnemyBattle>().Attack();
-
         }
         else
         {
-            enemies[0].transform.Find("EnemySelect").gameObject.SetActive(false);
             SetActive<PlayerBattle>(players[0].GetComponent<PlayerBattle>());
         }
     }
@@ -223,6 +208,58 @@ public class BattleHandler : MonoBehaviour
         return active.ToString();
     }
 
+    public void OrderList(bool isEnemy)
+    {
+        if (isEnemy == true)
+        {
+            enemies = enemies.OrderBy(e => e.GetComponent<EnemyBattle>().GetInitiative(false)).ToList();
+
+            // foreach (GameObject enemy in enemies)
+            // {
+            //     Debug.Log("Orderlist() | Enemy Current Initiative: " + enemy.GetComponent<EnemyBattle>().GetInitiative(false));
+            // }
+
+        }
+        else
+        {
+            players = players.OrderBy(p => p.GetComponent<PlayerBattle>().GetInitiative(false)).ToList();
+
+            // foreach (GameObject player in players)
+            // {
+            //     Debug.Log("Orderlist() | Player Current Initiative: " + player.GetComponent<PlayerBattle>().GetInitiative(false));
+            // }
+        }
+    }
+
+    public void DestroyEntity<T>(int num)
+    {
+        if (typeof(T) == typeof(PlayerBattle))
+        {
+            foreach (GameObject player in players.ToList())
+            {
+                if (player.GetComponent<PlayerBattle>().GetPlayerNum() == num)
+                {
+                    players.RemoveAt(players.IndexOf(player));
+                }
+            }
+        }
+        else
+        {
+            foreach (GameObject enemy in enemies.ToList())
+            {
+                if (enemy.GetComponent<EnemyBattle>().GetEnemyNum() == num)
+                {
+                    enemies.RemoveAt(enemies.IndexOf(enemy));
+                }
+            }
+        }
+    }
+
+    public IEnumerator TurnDelay()
+    {
+        yield return new WaitForSeconds(5f);
+    }
+
     private void GenerateInitiative<T>(int numOfInits, int i)
     {
         int init;
@@ -236,7 +273,7 @@ public class BattleHandler : MonoBehaviour
                 init = UnityEngine.Random.Range(10, numOfInits * 10 + 1);
             }
 
-            players[i].GetComponent<PlayerBattle>().SetInitiative(init);
+            players[i].GetComponent<PlayerBattle>().SetInitiative(init, true);
         }
         else
         {
@@ -245,7 +282,7 @@ public class BattleHandler : MonoBehaviour
                 init = UnityEngine.Random.Range(10, numOfInits * 10 + 1);
             }
 
-            enemies[i].GetComponent<EnemyBattle>().SetInitiative(init);
+            enemies[i].GetComponent<EnemyBattle>().SetInitiative(init, true);
         }
     }
 }
