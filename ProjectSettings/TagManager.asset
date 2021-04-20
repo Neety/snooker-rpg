@@ -13,6 +13,7 @@ TagManager:
   - HealthBar
   - GameHandler
   - Map
+  - Edge
   layers:
   - Default
   - TransparentFX

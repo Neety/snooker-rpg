@@ -24,6 +24,8 @@ public class EnemyBattle : MonoBehaviour
         this.enemyBody = GetComponent<Rigidbody2D>();
         battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleHandler>();
         gameHandler = GameObject.FindGameObjectWithTag("GameHandler").GetComponent<GameHandler>();
+
+        Debug.Log(this.active);
     }
 
     public void Attack()
@@ -52,9 +54,11 @@ public class EnemyBattle : MonoBehaviour
                 if (this.active == true)
                 {
                     battleSystem.doDamage(Damage(), false, other.gameObject.GetComponent<PlayerBattle>().GetPlayerNum(), other.gameObject.transform.Find("HealthBar").transform.position);
-
+                    Instantiate(battleSystem.pfImpact, other.transform.position, Quaternion.identity);
                 }
             }
+
+
         }
     }
 
@@ -78,12 +82,9 @@ public class EnemyBattle : MonoBehaviour
         return (int)Mathf.Ceil(this.enemyBody.velocity.magnitude);
     }
 
-    public int GetInitiative(bool start)
+    public int GetInitiative()
     {
-        if (start == true)
-            return this.startInitiative;
-        else
-            return this.currIntiative;
+        return this.currIntiative;
     }
     public void SetInitiative(int init, bool start)
     {

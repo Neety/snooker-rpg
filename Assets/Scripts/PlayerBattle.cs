@@ -33,11 +33,6 @@ public class PlayerBattle : MonoBehaviour
         gameHandler = GameObject.FindGameObjectWithTag("GameHandler").GetComponent<GameHandler>();
     }
 
-    private void OnMouseDown()
-    {
-        Debug.Log(this.active);
-    }
-
     private void OnMouseDrag()
     {
         if (this.active == true && this.hit == false && battleSystem.GetActive() == "Player")
@@ -66,6 +61,8 @@ public class PlayerBattle : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         ProcessCollision(other.gameObject);
+
+
     }
 
     private void ProcessCollision(GameObject other)
@@ -77,22 +74,37 @@ public class PlayerBattle : MonoBehaviour
                 if (this.active == true)
                 {
                     battleSystem.doDamage(Damage(), true, other.gameObject.GetComponent<EnemyBattle>().GetEnemyNum(), other.gameObject.transform.Find("HealthBar").transform.position);
-
+                    Instantiate(battleSystem.pfImpact, other.transform.position, Quaternion.identity);
                 }
             }
+
+
         }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        ProcessTrigger(other.gameObject);
+        ProcessTriggerExit(other.gameObject);
 
         Debug.Log("Destroyed");
     }
 
-    private void ProcessTrigger(GameObject other)
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        ProcessTriggerEnter(other.gameObject);
+    }
+
+    private void ProcessTriggerExit(GameObject other)
     {
         if (other.CompareTag("Map"))
+        {
+            this.dead = true;
+        }
+    }
+
+    private void ProcessTriggerEnter(GameObject other)
+    {
+        if (other.CompareTag("Edge"))
         {
             this.dead = true;
         }
@@ -103,12 +115,9 @@ public class PlayerBattle : MonoBehaviour
         return (int)Mathf.Ceil(this.playerBody.velocity.magnitude);
     }
 
-    public int GetInitiative(bool start)
+    public int GetInitiative()
     {
-        if (start == true)
-            return this.startInitiative;
-        else
-            return this.currIntiative;
+        return this.currIntiative;
     }
     public void SetInitiative(int init, bool start)
     {
