@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,7 @@ public class EnemyBattle : MonoBehaviour
     private int startInitiative, currIntiative, enemyNum;
     private Rigidbody2D enemyBody;
     private BattleHandler battleSystem;
+    private MoveToActive activeEntity;
     private GameHandler gameHandler;
     private bool active, hit, enter, start, dead;
     public event EventHandler triggerNextTurn;
@@ -23,9 +25,17 @@ public class EnemyBattle : MonoBehaviour
         this.enter = false;
         this.enemyBody = GetComponent<Rigidbody2D>();
         battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleHandler>();
-        gameHandler = GameObject.FindGameObjectWithTag("GameHandler").GetComponent<GameHandler>();
-
+        activeEntity = GameObject.FindGameObjectWithTag("Active").GetComponent<MoveToActive>();
         Debug.Log(this.active);
+    }
+
+    private Vector3 AttackAI()
+    {
+        List<GameObject> players = battleSystem.GetEntity(false);
+
+        players = players.OrderBy(p => p.GetComponent<Health>().GetHP()).ThenBy(p => Vector3.Distance(p.transform.position, this.transform.position)).ToList();
+
+        return players[0].transform.position;
     }
 
     public void Attack()
@@ -33,7 +43,7 @@ public class EnemyBattle : MonoBehaviour
         if (this.active == true && battleSystem.GetActive() == "Enemy")
         {
             this.enemyPos = this.transform.position + charOffset;
-            playerPos = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>().position;
+            playerPos = AttackAI();
             this.force = new Vector2(Mathf.Clamp(playerPos.x - this.enemyPos.x, this.minPower.x, this.maxPower.x), Mathf.Clamp(playerPos.y - this.enemyPos.y, this.minPower.y, this.maxPower.y));
             this.enemyBody.AddForce(this.force * power, ForceMode2D.Impulse);
             this.hit = true;
@@ -62,19 +72,9 @@ public class EnemyBattle : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    public void SetDead(bool dead)
     {
-        ProcessTrigger(other.gameObject);
-
-        Debug.Log("Destroyed");
-    }
-
-    private void ProcessTrigger(GameObject other)
-    {
-        if (other.CompareTag("Map"))
-        {
-            this.dead = true;
-        }
+        this.dead = dead;
     }
 
     private int Damage()
@@ -121,8 +121,9 @@ public class EnemyBattle : MonoBehaviour
     private IEnumerator TurnDelay()
     {
         this.enter = true;
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
         this.transform.Find("EnemySelect").gameObject.SetActive(false);
+        battleSystem.OrderList(true);
         triggerNextTurn?.Invoke(this, EventArgs.Empty);
         this.enter = false;
     }
@@ -133,16 +134,20 @@ public class EnemyBattle : MonoBehaviour
         {
             if (this.hit == true)
             {
+                activeEntity.moving = true;
+
                 if (this.enemyBody.velocity.magnitude < 0.2f)
                 {
                     this.enemyBody.velocity = Vector3.zero;
+
+                    activeEntity.moving = false;
 
                     if (this.dead == true)
                     {
                         this.gameObject.SetActive(false);
                         battleSystem.DestroyEntity<EnemyBattle>(GetEnemyNum());
+                        StartCoroutine(battleSystem.TurnDelay(2f));
                         battleSystem.OrderList(true);
-                        StartCoroutine(battleSystem.TurnDelay());
                         triggerNextTurn?.Invoke(this, EventArgs.Empty);
                     }
                     else
@@ -150,7 +155,6 @@ public class EnemyBattle : MonoBehaviour
                         this.active = false;
                         this.hit = false;
                         this.currIntiative = this.startInitiative;
-                        battleSystem.OrderList(true);
                         if (this.enter == false) StartCoroutine(TurnDelay());
                     }
                 }

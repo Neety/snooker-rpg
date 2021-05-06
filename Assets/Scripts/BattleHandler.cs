@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class BattleHandler : MonoBehaviour
 {
@@ -12,9 +13,8 @@ public class BattleHandler : MonoBehaviour
     {
         return inst;
     }
-    [SerializeField] private GameObject pfPlayer, pfEnemy, pfDamageText;
+    [SerializeField] private GameObject pfPlayer, pfEnemy, pfDamageText, activeEntity;
     public GameObject pfImpact;
-
     private int numOfPlayers;
     private int activePlayerNum;
     private List<GameObject> players = new List<GameObject>();
@@ -25,6 +25,7 @@ public class BattleHandler : MonoBehaviour
 
     private PlayerBattle playerBattle, activePlayer;
     private EnemyBattle enemyBattle, activeEnemy;
+    [SerializeField] private CinemachineVirtualCamera entityCam;
     int playerStartInitiative, enemyStartInitiative;
 
     private Active active;
@@ -64,6 +65,8 @@ public class BattleHandler : MonoBehaviour
         {
             enemy.GetComponent<EnemyBattle>().triggerNextTurn += NextActive;
         }
+
+        StartCoroutine(TurnDelay(3f));
 
         SetActive<PlayerBattle>(players[0].GetComponent<PlayerBattle>());
     }
@@ -122,14 +125,21 @@ public class BattleHandler : MonoBehaviour
 
     private void NextActive(object sender, EventArgs e)
     {
-        if (enemies[0].GetComponent<EnemyBattle>().GetInitiative() < players[0].GetComponent<PlayerBattle>().GetInitiative())
+        if (players.Count() != 0 && enemies.Count() != 0)
         {
-            SetActive<EnemyBattle>(enemies[0].GetComponent<EnemyBattle>());
-            enemies[0].GetComponent<EnemyBattle>().Attack();
-        }
-        else
-        {
-            SetActive<PlayerBattle>(players[0].GetComponent<PlayerBattle>());
+            if (enemies[0].GetComponent<EnemyBattle>().GetInitiative() < players[0].GetComponent<PlayerBattle>().GetInitiative())
+            {
+                SetActive<EnemyBattle>(enemies[0].GetComponent<EnemyBattle>());
+                if (activeEntity.GetComponent<MoveToActive>().CheckPosition() == true)
+                {
+                    enemies[0].GetComponent<EnemyBattle>().Attack();
+                }
+
+            }
+            else
+            {
+                SetActive<PlayerBattle>(players[0].GetComponent<PlayerBattle>());
+            }
         }
     }
 
@@ -175,6 +185,14 @@ public class BattleHandler : MonoBehaviour
         return active.ToString();
     }
 
+    public List<GameObject> GetEntity(bool isEnemy)
+    {
+        if (isEnemy)
+            return enemies;
+        else
+            return players;
+    }
+
     public void OrderList(bool isEnemy)
     {
         if (isEnemy == true)
@@ -211,9 +229,9 @@ public class BattleHandler : MonoBehaviour
         }
     }
 
-    public IEnumerator TurnDelay()
+    public IEnumerator TurnDelay(float waitTime)
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(waitTime);
     }
 
     private void NextInitiative(int initiativeDiff)

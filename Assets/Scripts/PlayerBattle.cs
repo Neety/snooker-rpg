@@ -17,6 +17,7 @@ public class PlayerBattle : MonoBehaviour
     private Rigidbody2D playerBody;
     private TrajectoryLineV2 trajectoryLine;
     private BattleHandler battleSystem;
+    private MoveToActive activeEntity;
     private GameHandler gameHandler;
     private float dist;
     private string state;
@@ -30,7 +31,7 @@ public class PlayerBattle : MonoBehaviour
         this.trajectoryLine = GetComponent<TrajectoryLineV2>();
         this.playerBody = GetComponent<Rigidbody2D>();
         battleSystem = GameObject.FindGameObjectWithTag("BattleSystem").GetComponent<BattleHandler>();
-        gameHandler = GameObject.FindGameObjectWithTag("GameHandler").GetComponent<GameHandler>();
+        activeEntity = GameObject.FindGameObjectWithTag("Active").GetComponent<MoveToActive>();
     }
 
     private void OnMouseDrag()
@@ -82,32 +83,9 @@ public class PlayerBattle : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    public void SetDead(bool dead)
     {
-        ProcessTriggerExit(other.gameObject);
-
-        Debug.Log("Destroyed");
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        ProcessTriggerEnter(other.gameObject);
-    }
-
-    private void ProcessTriggerExit(GameObject other)
-    {
-        if (other.CompareTag("Map"))
-        {
-            this.dead = true;
-        }
-    }
-
-    private void ProcessTriggerEnter(GameObject other)
-    {
-        if (other.CompareTag("Edge"))
-        {
-            this.dead = true;
-        }
+        this.dead = dead;
     }
 
     private int Damage()
@@ -156,8 +134,9 @@ public class PlayerBattle : MonoBehaviour
     private IEnumerator TurnDelay()
     {
         this.enter = true;
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
         this.transform.Find("PlayerSelect").gameObject.SetActive(false);
+        battleSystem.OrderList(false);
         triggerNextTurn?.Invoke(this, EventArgs.Empty);
         this.enter = false;
     }
@@ -168,16 +147,20 @@ public class PlayerBattle : MonoBehaviour
         {
             if (this.hit == true)
             {
+                activeEntity.moving = true;
+
                 if (this.playerBody.velocity.magnitude < 0.2f)
                 {
                     this.playerBody.velocity = Vector3.zero;
+
+                    activeEntity.moving = false;
 
                     if (this.dead == true)
                     {
                         this.gameObject.SetActive(false);
                         battleSystem.DestroyEntity<PlayerBattle>(GetPlayerNum());
+                        StartCoroutine(battleSystem.TurnDelay(2f));
                         battleSystem.OrderList(false);
-                        StartCoroutine(battleSystem.TurnDelay());
                         triggerNextTurn?.Invoke(this, EventArgs.Empty);
                     }
                     else
@@ -185,7 +168,6 @@ public class PlayerBattle : MonoBehaviour
                         this.active = false;
                         this.hit = false;
                         this.currIntiative = this.startInitiative;
-                        battleSystem.OrderList(false);
                         if (this.enter == false) StartCoroutine(TurnDelay());
                     }
                 }
