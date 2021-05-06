@@ -117,7 +117,6 @@ public class EnemyBattle : MonoBehaviour
         else
             this.active = false;
     }
-
     private IEnumerator TurnDelay()
     {
         this.enter = true;

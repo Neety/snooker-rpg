@@ -26,8 +26,7 @@ public class BattleHandler : MonoBehaviour
     private PlayerBattle playerBattle, activePlayer;
     private EnemyBattle enemyBattle, activeEnemy;
     [SerializeField] private CinemachineVirtualCamera entityCam;
-    int playerStartInitiative, enemyStartInitiative;
-
+    private int playerStartInitiative, enemyStartInitiative;
     private Active active;
     private enum Active
     {
@@ -77,7 +76,7 @@ public class BattleHandler : MonoBehaviour
 
         if (isPlayerTeam)
         {
-            position = new Vector3(UnityEngine.Random.Range(-12f, -6f), UnityEngine.Random.Range(-8f, 0), 0);
+            position = new Vector3(UnityEngine.Random.Range(-70f, 0f), UnityEngine.Random.Range(-45f, 0f), 0);
             players.Insert(i, Instantiate(pfPlayer, position, Quaternion.identity));
             players[i].GetComponent<PlayerBattle>().SetPlayerNum(i);
             players[i].GetComponentInChildren<HealthBar>().Setup(players[i].GetComponent<Health>());
@@ -85,7 +84,7 @@ public class BattleHandler : MonoBehaviour
         }
         else
         {
-            position = new Vector3(UnityEngine.Random.Range(6f, 12f), UnityEngine.Random.Range(0, 8f), 0);
+            position = new Vector3(UnityEngine.Random.Range(70f, 0f), UnityEngine.Random.Range(45f, 0f), 0);
             enemies.Insert(i, Instantiate(pfEnemy, position, Quaternion.identity));
             enemies[i].GetComponent<EnemyBattle>().SetEnemyNum(i);
             enemies[i].GetComponentInChildren<HealthBar>().Setup(enemies[i].GetComponent<Health>());
@@ -100,7 +99,7 @@ public class BattleHandler : MonoBehaviour
             active = Active.Player;
 
             activePlayer = (PlayerBattle)(object)activeEntity;
-            Debug.Log("Set Active Player");
+            // Debug.Log("Set Active Player");
             activePlayer.SetActive(true);
             int initativeDiff = activePlayer.GetInitiative();
 
@@ -113,7 +112,7 @@ public class BattleHandler : MonoBehaviour
             active = Active.Enemy;
 
             activeEnemy = (EnemyBattle)(object)activeEntity;
-            Debug.Log("Set Active Enemy");
+            // Debug.Log("Set Active Enemy");
             activeEnemy.SetActive(true);
             int initativeDiff = activeEnemy.GetInitiative();
 
@@ -130,10 +129,7 @@ public class BattleHandler : MonoBehaviour
             if (enemies[0].GetComponent<EnemyBattle>().GetInitiative() < players[0].GetComponent<PlayerBattle>().GetInitiative())
             {
                 SetActive<EnemyBattle>(enemies[0].GetComponent<EnemyBattle>());
-                if (activeEntity.GetComponent<MoveToActive>().CheckPosition() == true)
-                {
-                    enemies[0].GetComponent<EnemyBattle>().Attack();
-                }
+                StartCoroutine(Attack());
 
             }
             else
@@ -234,6 +230,12 @@ public class BattleHandler : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
     }
 
+    private IEnumerator Attack()
+    {
+        yield return new WaitForSeconds(2.5f);
+        enemies[0].GetComponent<EnemyBattle>().Attack();
+    }
+
     private void NextInitiative(int initiativeDiff)
     {
         int currInitiative;
@@ -259,7 +261,7 @@ public class BattleHandler : MonoBehaviour
 
         if (typeof(T) == typeof(PlayerBattle))
         {
-            while (players.Any(p => p.GetComponent<PlayerBattle>().GetInitiative() == init || enemies.Any(e => e.GetComponent<EnemyBattle>().GetInitiative() == init)))
+            if (players.Any(p => p.GetComponent<PlayerBattle>().GetInitiative() == init || enemies.Any(e => e.GetComponent<EnemyBattle>().GetInitiative() == init)))
             {
                 init = UnityEngine.Random.Range(10, numOfInits * 10 + 1);
             }
@@ -268,7 +270,7 @@ public class BattleHandler : MonoBehaviour
         }
         else
         {
-            while (enemies.Any(e => e.GetComponent<EnemyBattle>().GetInitiative() == init || players.Any(p => p.GetComponent<PlayerBattle>().GetInitiative() == init)))
+            if (enemies.Any(e => e.GetComponent<EnemyBattle>().GetInitiative() == init || players.Any(p => p.GetComponent<PlayerBattle>().GetInitiative() == init)))
             {
                 init = UnityEngine.Random.Range(10, numOfInits * 10 + 1);
             }

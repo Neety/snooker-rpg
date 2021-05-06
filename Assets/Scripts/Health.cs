@@ -11,15 +11,14 @@ public class Health : MonoBehaviour
     {
         this.HP = MaxHP;
     }
-
     public int GetHP()
     {
         return this.HP;
     }
 
-    public float GetHPPercentage()
+    public int GetMaxHP()
     {
-        return (float)this.HP / this.MaxHP;
+        return this.MaxHP;
     }
 
     public void Damage(int damage)

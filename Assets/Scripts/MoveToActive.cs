@@ -26,10 +26,7 @@ public class MoveToActive : MonoBehaviour
         {
             transform.position = currActive.position + offset;
         }
-    }
 
-    private void Update()
-    {
         if (battleHandler.GetComponent<BattleHandler>().GetActive() == "Player")
             currActive = battleHandler.GetComponent<BattleHandler>().GetEntity(false)[0].transform;
         else
@@ -39,13 +36,14 @@ public class MoveToActive : MonoBehaviour
             inPosition = true;
         else
             inPosition = false;
-    }
 
+
+    }
     private void LateUpdate()
     {
         if (inPosition == false)
         {
-            transform.position = Vector3.Lerp(transform.position, currActive.position, Time.deltaTime * transitionSpeed);
+            transform.position = Vector3.Lerp(transform.position, currActive.position + offset, Time.deltaTime * transitionSpeed);
         }
     }
 
