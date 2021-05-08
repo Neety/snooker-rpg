@@ -11,7 +11,7 @@ public class PlayerBattle : MonoBehaviour
     private Transform select;
     private Vector2 force, minVel;
     private Vector3 currentPoint, lineStart, lineEnd, dir;
-    private Vector3 camOffset = new Vector3(0, 0, 10);
+    private Vector3 camOffset = new Vector3(0, 0, 9);
 
     private int startInitiative, currIntiative, playerNum;
     private Rigidbody2D playerBody;
@@ -40,21 +40,22 @@ public class PlayerBattle : MonoBehaviour
         {
             this.lineStart = this.transform.position + this.charOffset;
             this.currentPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition) + camOffset;
-            this.dir = this.currentPoint - this.lineStart;
+            this.dir = this.lineStart - this.currentPoint;
             this.dist = Vector3.Distance(this.currentPoint, this.lineStart);
-            this.lineEnd = this.lineStart + this.dir.normalized * this.dist * -1;
+            this.lineEnd = this.lineStart + this.dir.normalized * this.dist;
             this.trajectoryLine.RenderLine(this.lineStart, this.lineEnd);
         }
     }
-
     private void OnMouseUp()
     {
         if (this.active == true && this.hit == false && battleSystem.GetActive() == "Player")
         {
-            this.lineEnd = this.transform.position + this.dir.normalized * this.dist;
-            this.force = new Vector2(Mathf.Clamp(this.lineStart.x - this.lineEnd.x, this.minPower.x, this.maxPower.x), Mathf.Clamp(this.lineStart.y - this.lineEnd.y, this.minPower.y, this.maxPower.y));
-            this.playerBody.AddForce(this.force * power, ForceMode2D.Impulse);
+            // this.lineStart = this.transform.position + this.charOffset;
+            // this.currentPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition) + camOffset;
+            // this.dir = this.lineStart - this.currentPoint;
+            this.playerBody.AddForce(this.dir.normalized * power, ForceMode2D.Impulse);
             this.trajectoryLine.EndLine();
+            Debug.Log("Current Point: " + this.currentPoint + " Line Start: " + this.lineStart);
             this.hit = true;
         }
     }
@@ -62,8 +63,6 @@ public class PlayerBattle : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         ProcessCollision(other.gameObject);
-
-
     }
 
     private void ProcessCollision(GameObject other)
@@ -75,6 +74,7 @@ public class PlayerBattle : MonoBehaviour
                 if (this.active == true)
                 {
                     battleSystem.doDamage(Damage(), true, other.gameObject.GetComponent<EnemyBattle>().GetEnemyNum(), other.gameObject.transform.Find("HealthBar").transform.position);
+                    Debug.Log(Damage());
                     Instantiate(battleSystem.pfImpact, other.transform.position, Quaternion.identity);
                 }
             }
@@ -83,9 +83,9 @@ public class PlayerBattle : MonoBehaviour
         }
     }
 
-    public void SetDead(bool dead)
+    public void SetDead()
     {
-        this.dead = dead;
+        this.dead = true;
     }
 
     private int Damage()
@@ -157,9 +157,9 @@ public class PlayerBattle : MonoBehaviour
 
                     if (this.dead == true)
                     {
+                        // StartCoroutine(battleSystem.TurnDelay(2f));
                         this.gameObject.SetActive(false);
                         battleSystem.DestroyEntity<PlayerBattle>(GetPlayerNum());
-                        StartCoroutine(battleSystem.TurnDelay(2f));
                         battleSystem.OrderList(false);
                         triggerNextTurn?.Invoke(this, EventArgs.Empty);
                     }

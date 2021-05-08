@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class Destroy : MonoBehaviour
 {
-    [SerializeField] private float destroyTime = 0.5f;
+    [SerializeField] private float destroyTime;
     void Start()
     {
-        Destroy(gameObject, destroyTime);
+        StartCoroutine(DestroySelf(destroyTime));
+    }
+
+    private IEnumerator DestroySelf(float destroyTime)
+    {
+        yield return new WaitForSeconds(destroyTime);
+        this.gameObject.SetActive(false);
     }
 }

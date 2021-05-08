@@ -10,12 +10,14 @@ public class DeathTrigger : MonoBehaviour
         {
             if (this.transform.parent.tag == "Player")
             {
-                this.transform.parent.gameObject.GetComponent<PlayerBattle>().SetDead(true);
+                this.transform.parent.gameObject.GetComponent<PlayerBattle>().SetDead();
             }
             else if (this.transform.parent.tag == "Enemy")
             {
-                this.transform.parent.gameObject.GetComponent<EnemyBattle>().SetDead(true);
+                this.transform.parent.gameObject.GetComponent<EnemyBattle>().SetDead();
             }
+
+            Debug.Log("dead");
         }
     }
 }

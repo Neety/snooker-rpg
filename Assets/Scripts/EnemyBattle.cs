@@ -72,9 +72,9 @@ public class EnemyBattle : MonoBehaviour
         }
     }
 
-    public void SetDead(bool dead)
+    public void SetDead()
     {
-        this.dead = dead;
+        this.dead = true;
     }
 
     private int Damage()

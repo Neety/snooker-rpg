@@ -39,8 +39,8 @@ public class BattleHandler : MonoBehaviour
     }
     private void Start()
     {
-        numOfPlayers = UnityEngine.Random.Range(1, 5);
-        numOfEnemies = UnityEngine.Random.Range(1, 5);
+        numOfPlayers = UnityEngine.Random.Range(2, 5);
+        numOfEnemies = UnityEngine.Random.Range(2, 5);
 
         for (int i = 0; i < numOfPlayers; i++)
         {
@@ -232,7 +232,8 @@ public class BattleHandler : MonoBehaviour
 
     private IEnumerator Attack()
     {
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitUntil(inPos);
+        yield return new WaitForSeconds(1f);
         enemies[0].GetComponent<EnemyBattle>().Attack();
     }
 
@@ -276,6 +277,28 @@ public class BattleHandler : MonoBehaviour
             }
 
             enemies[i].GetComponent<EnemyBattle>().SetInitiative(init, true);
+        }
+    }
+
+    private bool inPos()
+    {
+        if (GetActive() == "Player")
+        {
+            if (Mathf.Floor(activeEntity.transform.position.x) == Mathf.Floor(players[0].transform.position.x) && Mathf.Floor(activeEntity.transform.position.y) == Mathf.Floor(players[0].transform.position.y))
+            {
+                return true;
+            }
+            else
+                return false;
+        }
+        else
+        {
+            if (Mathf.Floor(activeEntity.transform.position.x) == Mathf.Floor(enemies[0].transform.position.x) && Mathf.Floor(activeEntity.transform.position.y) == Mathf.Floor(enemies[0].transform.position.y))
+            {
+                return true;
+            }
+            else
+                return false;
         }
     }
 }

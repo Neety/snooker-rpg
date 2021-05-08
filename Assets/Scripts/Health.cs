@@ -6,10 +6,23 @@ public class Health : MonoBehaviour
     public event EventHandler OnHealthChanged;
     [SerializeField] private int MaxHP;
     private int HP;
+    PlayerBattle playerBattle;
+    EnemyBattle enemyBattle;
 
     private void Start()
     {
         this.HP = MaxHP;
+
+        if (this.transform.tag == "Player")
+        {
+            this.playerBattle = this.GetComponent<PlayerBattle>();
+        }
+
+        if (this.transform.tag == "Enemy")
+        {
+            this.enemyBattle = this.GetComponent<EnemyBattle>();
+        }
+
     }
     public int GetHP()
     {
@@ -24,7 +37,20 @@ public class Health : MonoBehaviour
     public void Damage(int damage)
     {
         this.HP -= damage;
-        if (HP < 0) HP = 0;
+        if (HP < 0)
+        {
+            HP = 0;
+
+            if (this.transform.tag == "Player")
+            {
+                this.playerBattle.SetDead();
+            }
+            else if (this.transform.tag == "Enemy")
+            {
+                this.enemyBattle.SetDead();
+            }
+
+        }
         if (OnHealthChanged != null) OnHealthChanged(this, EventArgs.Empty);
     }
 }

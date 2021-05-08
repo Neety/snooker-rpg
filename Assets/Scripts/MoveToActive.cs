@@ -31,13 +31,6 @@ public class MoveToActive : MonoBehaviour
             currActive = battleHandler.GetComponent<BattleHandler>().GetEntity(false)[0].transform;
         else
             currActive = battleHandler.GetComponent<BattleHandler>().GetEntity(true)[0].transform;
-
-        if (transform.position == currActive.position + offset)
-            inPosition = true;
-        else
-            inPosition = false;
-
-
     }
     private void LateUpdate()
     {
@@ -45,10 +38,5 @@ public class MoveToActive : MonoBehaviour
         {
             transform.position = Vector3.Lerp(transform.position, currActive.position + offset, Time.deltaTime * transitionSpeed);
         }
-    }
-
-    public bool CheckPosition()
-    {
-        return inPosition;
     }
 }
