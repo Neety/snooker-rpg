@@ -264,7 +264,10 @@ public class BattleHandler : MonoBehaviour
         {
             if (players.Any(p => p.GetComponent<PlayerBattle>().GetInitiative() == init || enemies.Any(e => e.GetComponent<EnemyBattle>().GetInitiative() == init)))
             {
-                init = UnityEngine.Random.Range(10, numOfInits * 10 + 1);
+                while (players.Any(p => p.GetComponent<PlayerBattle>().GetInitiative() == init || enemies.Any(e => e.GetComponent<EnemyBattle>().GetInitiative() == init)))
+                {
+                    init = UnityEngine.Random.Range(10, numOfInits * 10 + 1);
+                }
             }
 
             players[i].GetComponent<PlayerBattle>().SetInitiative(init, true);
@@ -273,7 +276,10 @@ public class BattleHandler : MonoBehaviour
         {
             if (enemies.Any(e => e.GetComponent<EnemyBattle>().GetInitiative() == init || players.Any(p => p.GetComponent<PlayerBattle>().GetInitiative() == init)))
             {
-                init = UnityEngine.Random.Range(10, numOfInits * 10 + 1);
+                while (players.Any(p => p.GetComponent<PlayerBattle>().GetInitiative() == init || enemies.Any(e => e.GetComponent<EnemyBattle>().GetInitiative() == init)))
+                {
+                    init = UnityEngine.Random.Range(10, numOfInits * 10 + 1);
+                }
             }
 
             enemies[i].GetComponent<EnemyBattle>().SetInitiative(init, true);

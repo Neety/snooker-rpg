@@ -53,7 +53,7 @@ public class PlayerBattle : MonoBehaviour
             // this.lineStart = this.transform.position + this.charOffset;
             // this.currentPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition) + camOffset;
             // this.dir = this.lineStart - this.currentPoint;
-            this.playerBody.AddForce(this.dir.normalized * power, ForceMode2D.Impulse);
+            this.playerBody.AddForce((this.dir.normalized * this.dist) * power, ForceMode2D.Impulse);
             this.trajectoryLine.EndLine();
             Debug.Log("Current Point: " + this.currentPoint + " Line Start: " + this.lineStart);
             this.hit = true;

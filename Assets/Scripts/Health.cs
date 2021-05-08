@@ -17,8 +17,7 @@ public class Health : MonoBehaviour
         {
             this.playerBattle = this.GetComponent<PlayerBattle>();
         }
-
-        if (this.transform.tag == "Enemy")
+        else if (this.transform.tag == "Enemy")
         {
             this.enemyBattle = this.GetComponent<EnemyBattle>();
         }
