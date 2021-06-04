@@ -233,7 +233,7 @@ public class BattleHandler : MonoBehaviour
     private IEnumerator Attack()
     {
         yield return new WaitUntil(inPos);
-        yield return new WaitForSeconds(1f);
+        //yield return new WaitForSeconds(1f);
         enemies[0].GetComponent<EnemyBattle>().Attack();
     }
 

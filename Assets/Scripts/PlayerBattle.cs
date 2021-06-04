@@ -149,7 +149,7 @@ public class PlayerBattle : MonoBehaviour
             {
                 activeEntity.moving = true;
 
-                if (this.playerBody.velocity.magnitude < 0.2f)
+                if (this.playerBody.velocity.magnitude < 1f)
                 {
                     this.playerBody.velocity = Vector3.zero;
 
@@ -175,7 +175,7 @@ public class PlayerBattle : MonoBehaviour
         }
         else
         {
-            if (this.playerBody.velocity.magnitude < 0.2f)
+            if (this.playerBody.velocity.magnitude < 1f)
             {
                 if (this.dead == true)
                 {

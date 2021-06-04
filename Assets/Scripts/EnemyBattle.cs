@@ -9,7 +9,8 @@ public class EnemyBattle : MonoBehaviour
     [SerializeField] private float power;
     [SerializeField] private Vector2 minPower, maxPower;
     [SerializeField] private Vector3 charOffset;
-    private Vector2 force;
+    private float dist;
+    private Vector2 force, dir;
     private Vector3 playerPos, enemyPos;
     private int startInitiative, currIntiative, enemyNum;
     private Rigidbody2D enemyBody;
@@ -43,9 +44,11 @@ public class EnemyBattle : MonoBehaviour
         if (this.active == true && battleSystem.GetActive() == "Enemy")
         {
             this.enemyPos = this.transform.position + charOffset;
-            playerPos = AttackAI();
-            this.force = new Vector2(Mathf.Clamp(playerPos.x - this.enemyPos.x, this.minPower.x, this.maxPower.x), Mathf.Clamp(playerPos.y - this.enemyPos.y, this.minPower.y, this.maxPower.y));
-            this.enemyBody.AddForce(this.force * power, ForceMode2D.Impulse);
+            this.playerPos = AttackAI();
+            this.dist = Vector3.Distance(enemyPos, playerPos);
+            Debug.Log("Distance to Player: " + this.dist);
+            this.dir = this.playerPos - this.enemyPos;
+            this.enemyBody.AddForce(this.dir.normalized * this.dist * power, ForceMode2D.Impulse);
             this.hit = true;
         }
     }
@@ -135,7 +138,7 @@ public class EnemyBattle : MonoBehaviour
             {
                 activeEntity.moving = true;
 
-                if (this.enemyBody.velocity.magnitude < 0.2f)
+                if (this.enemyBody.velocity.magnitude < 1f)
                 {
                     this.enemyBody.velocity = Vector3.zero;
 
@@ -145,7 +148,7 @@ public class EnemyBattle : MonoBehaviour
                     {
                         this.gameObject.SetActive(false);
                         battleSystem.DestroyEntity<EnemyBattle>(GetEnemyNum());
-                        StartCoroutine(battleSystem.TurnDelay(2f));
+                        StartCoroutine(battleSystem.TurnDelay(1f));
                         battleSystem.OrderList(true);
                         triggerNextTurn?.Invoke(this, EventArgs.Empty);
                     }
@@ -161,7 +164,7 @@ public class EnemyBattle : MonoBehaviour
         }
         else
         {
-            if (this.enemyBody.velocity.magnitude < 0.2f)
+            if (this.enemyBody.velocity.magnitude < 1f)
             {
                 if (this.dead == true)
                 {
