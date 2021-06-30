@@ -11,12 +11,11 @@ GameObject:
   - component: {fileID: 1164584978734740201}
   - component: {fileID: 954770688816336278}
   - component: {fileID: 718729553342754601}
-  - component: {fileID: 619888841480537092}
+  - component: {fileID: 1235664546073839288}
   - component: {fileID: -8719552876579994634}
   - component: {fileID: -2734088080013422573}
-  - component: {fileID: 2145499126337405183}
   m_Layer: 0
-  m_Name: Ogre
+  m_Name: Goblin
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 7d41fe4d958d11e41a801797cd1c33cf, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b543a14d8857be14aabd0c58e7a9bfb2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -102,7 +101,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 50
+  m_Mass: 10
   m_LinearDrag: 1.5
   m_AngularDrag: 0
   m_GravityScale: 0
@@ -111,8 +110,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!58 &619888841480537092
-CircleCollider2D:
+--- !u!70 &1235664546073839288
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -120,13 +119,13 @@ CircleCollider2D:
   m_GameObject: {fileID: 3697950344183804165}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 051035e2c91f1ab4198f28bd0b7128bf, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.09317398, y: -0.18634915}
-  serializedVersion: 2
-  m_Radius: 10.355112
+  m_Offset: {x: 0.30088425, y: -1.8052834}
+  m_Size: {x: 11.16519, y: 16.160116}
+  m_Direction: 0
 --- !u!114 &-8719552876579994634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,8 +138,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49a6f45ec37374e4cab29c5426db7ef6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  power: 30
+  power: 15
   charOffset: {x: 0, y: -3, z: 0}
+  pfGrave: {fileID: 0}
 --- !u!114 &-2734088080013422573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,21 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a531ed21c6a62c84886f142c226f0515, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 5000
---- !u!114 &2145499126337405183
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3697950344183804165}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c85d8fc7a8c59034bb019a44a86f3c46, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pfOgreGrave: {fileID: 6304064865322583588, guid: 3dcbbaeae60a72b4cad4b1831e3398fc,
-    type: 3}
+  MaxHP: 1000
 --- !u!1 &7991743953583163197
 GameObject:
   m_ObjectHideFlags: 0
@@ -415,12 +401,12 @@ PrefabInstance:
     - target: {fileID: 1551975066228894083, guid: 3d4aee3bbf70c4342860a2470d8ffe09,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.65
       objectReference: {fileID: 0}
     - target: {fileID: 1551975066228894083, guid: 3d4aee3bbf70c4342860a2470d8ffe09,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -10
+      value: -9
       objectReference: {fileID: 0}
     - target: {fileID: 1551975066228894083, guid: 3d4aee3bbf70c4342860a2470d8ffe09,
         type: 3}
@@ -460,6 +446,11 @@ PrefabInstance:
     - target: {fileID: 1551975066228894083, guid: 3d4aee3bbf70c4342860a2470d8ffe09,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2660059909551564560, guid: 3d4aee3bbf70c4342860a2470d8ffe09,
+        type: 3}
+      propertyPath: m_Offset.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6443308624489080027, guid: 3d4aee3bbf70c4342860a2470d8ffe09,

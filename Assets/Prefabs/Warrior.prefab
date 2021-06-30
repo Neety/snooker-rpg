@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 711866922585294155}
   - component: {fileID: -5177222841853143316}
   - component: {fileID: 7858806565724431252}
+  - component: {fileID: 3932330839456097481}
   m_Layer: 0
   m_Name: Warrior
   m_TagString: Player
@@ -259,8 +260,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   power: 30
-  minPower: {x: -10, y: -10}
-  maxPower: {x: 10, y: 10}
   charOffset: {x: 0, y: -0.3, z: 0}
 --- !u!114 &7858806565724431252
 MonoBehaviour:
@@ -274,7 +273,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a531ed21c6a62c84886f142c226f0515, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 100
+  MaxHP: 2500
+--- !u!114 &3932330839456097481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 711866922585294153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9adfdb33d74ddf44a62f356aec5c870, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pfWarriorGrave: {fileID: 7556120651354552195, guid: ba803fdadf74370479dc8962a50b5c36,
+    type: 3}
 --- !u!1 &6713377618323686286
 GameObject:
   m_ObjectHideFlags: 0
@@ -404,7 +417,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 1
 --- !u!114 &5222345461700521773
 MonoBehaviour:
   m_ObjectHideFlags: 0

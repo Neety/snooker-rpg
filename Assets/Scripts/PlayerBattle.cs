@@ -6,23 +6,18 @@ using UnityEngine;
 public class PlayerBattle : MonoBehaviour
 {
     [SerializeField] private float power;
-    [SerializeField] private Vector2 minPower, maxPower;
     [SerializeField] private Vector3 charOffset;
-    private Transform select;
-    private Vector2 force, minVel;
+
     private Vector3 currentPoint, lineStart, lineEnd, dir;
     private Vector3 camOffset = new Vector3(0, 0, 9);
-
     private int startInitiative, currIntiative, playerNum;
     private Rigidbody2D playerBody;
     private TrajectoryLineV2 trajectoryLine;
     private BattleHandler battleSystem;
     private MoveToActive activeEntity;
-    private GameHandler gameHandler;
     private float dist;
-    private string state;
     private bool active, hit, enter, start, dead;
-    public event EventHandler triggerNextTurn;
+    public event EventHandler triggerNextTurn, setDead;
 
     private void Start()
     {
@@ -83,14 +78,19 @@ public class PlayerBattle : MonoBehaviour
         }
     }
 
-    public void SetDead()
+    public void SetDead(bool HP)
     {
         this.dead = true;
+        if (HP == false)
+        {
+
+            this.setDead?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private int Damage()
     {
-        return (int)Mathf.Ceil(this.playerBody.velocity.magnitude);
+        return (int)Mathf.Ceil(this.playerBody.velocity.magnitude * this.playerBody.mass);
     }
 
     public int GetInitiative()
@@ -147,13 +147,13 @@ public class PlayerBattle : MonoBehaviour
         {
             if (this.hit == true)
             {
-                activeEntity.moving = true;
+                activeEntity.GetMoving(true);
 
                 if (this.playerBody.velocity.magnitude < 1f)
                 {
                     this.playerBody.velocity = Vector3.zero;
 
-                    activeEntity.moving = false;
+                    activeEntity.GetMoving(false);
 
                     if (this.dead == true)
                     {

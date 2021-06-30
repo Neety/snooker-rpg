@@ -7,18 +7,16 @@ using UnityEngine;
 public class EnemyBattle : MonoBehaviour
 {
     [SerializeField] private float power;
-    [SerializeField] private Vector2 minPower, maxPower;
     [SerializeField] private Vector3 charOffset;
     private float dist;
-    private Vector2 force, dir;
+    private Vector2 dir;
     private Vector3 playerPos, enemyPos;
     private int startInitiative, currIntiative, enemyNum;
     private Rigidbody2D enemyBody;
     private BattleHandler battleSystem;
     private MoveToActive activeEntity;
-    private GameHandler gameHandler;
     private bool active, hit, enter, start, dead;
-    public event EventHandler triggerNextTurn;
+    public event EventHandler triggerNextTurn, setDead;
 
     private void Start()
     {
@@ -39,6 +37,16 @@ public class EnemyBattle : MonoBehaviour
         return players[0].transform.position;
     }
 
+    private float PowerCalc(float dist)
+    {
+        if (dist < 10)
+        {
+            dist *= 2.5f;
+        }
+
+        return dist;
+    }
+
     public void Attack()
     {
         if (this.active == true && battleSystem.GetActive() == "Enemy")
@@ -48,7 +56,7 @@ public class EnemyBattle : MonoBehaviour
             this.dist = Vector3.Distance(enemyPos, playerPos);
             Debug.Log("Distance to Player: " + this.dist);
             this.dir = this.playerPos - this.enemyPos;
-            this.enemyBody.AddForce(this.dir.normalized * this.dist * power, ForceMode2D.Impulse);
+            this.enemyBody.AddForce(this.dir.normalized * Mathf.Clamp(dist, 50, 100) * power, ForceMode2D.Impulse);
             this.hit = true;
         }
     }
@@ -67,22 +75,27 @@ public class EnemyBattle : MonoBehaviour
                 if (this.active == true)
                 {
                     battleSystem.doDamage(Damage(), false, other.gameObject.GetComponent<PlayerBattle>().GetPlayerNum(), other.gameObject.transform.Find("HealthBar").transform.position);
+                    Debug.Log(Damage());
                     Instantiate(battleSystem.pfImpact, other.transform.position, Quaternion.identity);
                 }
             }
-
-
         }
     }
 
-    public void SetDead()
+    public void SetDead(bool HP)
     {
         this.dead = true;
+        if (HP == false)
+        {
+            this.setDead?.Invoke(this, EventArgs.Empty);
+        }
     }
+
 
     private int Damage()
     {
-        return (int)Mathf.Ceil(this.enemyBody.velocity.magnitude);
+        return (int)Mathf.Ceil(this.enemyBody.velocity.magnitude * this.enemyBody.mass);
+
     }
 
     public int GetInitiative()
@@ -136,13 +149,13 @@ public class EnemyBattle : MonoBehaviour
         {
             if (this.hit == true)
             {
-                activeEntity.moving = true;
+                activeEntity.GetMoving(true);
 
                 if (this.enemyBody.velocity.magnitude < 1f)
                 {
                     this.enemyBody.velocity = Vector3.zero;
 
-                    activeEntity.moving = false;
+                    activeEntity.GetMoving(false);
 
                     if (this.dead == true)
                     {

@@ -42,11 +42,12 @@ public class Health : MonoBehaviour
 
             if (this.transform.tag == "Player")
             {
-                this.playerBattle.SetDead();
+                this.playerBattle.SetDead(false);
+
             }
             else if (this.transform.tag == "Enemy")
             {
-                this.enemyBattle.SetDead();
+                this.enemyBattle.SetDead(false);
             }
 
         }

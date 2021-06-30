@@ -14,9 +14,8 @@ GameObject:
   - component: {fileID: 619888841480537092}
   - component: {fileID: -8719552876579994634}
   - component: {fileID: -2734088080013422573}
-  - component: {fileID: 2145499126337405183}
   m_Layer: 0
-  m_Name: Ogre
+  m_Name: Gremlin
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 7d41fe4d958d11e41a801797cd1c33cf, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b620d45a464e4214b9c34314a904dff7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -102,7 +101,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 50
+  m_Mass: 5
   m_LinearDrag: 1.5
   m_AngularDrag: 0
   m_GravityScale: 0
@@ -124,9 +123,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.09317398, y: -0.18634915}
+  m_Offset: {x: 0.14109135, y: -0.09051323}
   serializedVersion: 2
-  m_Radius: 10.355112
+  m_Radius: 5.132056
 --- !u!114 &-8719552876579994634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,8 +138,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49a6f45ec37374e4cab29c5426db7ef6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  power: 30
+  power: 10
   charOffset: {x: 0, y: -3, z: 0}
+  pfGrave: {fileID: 0}
 --- !u!114 &-2734088080013422573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,21 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a531ed21c6a62c84886f142c226f0515, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 5000
---- !u!114 &2145499126337405183
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3697950344183804165}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c85d8fc7a8c59034bb019a44a86f3c46, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pfOgreGrave: {fileID: 6304064865322583588, guid: 3dcbbaeae60a72b4cad4b1831e3398fc,
-    type: 3}
+  MaxHP: 750
 --- !u!1 &7991743953583163197
 GameObject:
   m_ObjectHideFlags: 0
@@ -420,7 +406,7 @@ PrefabInstance:
     - target: {fileID: 1551975066228894083, guid: 3d4aee3bbf70c4342860a2470d8ffe09,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -10
+      value: -5.75
       objectReference: {fileID: 0}
     - target: {fileID: 1551975066228894083, guid: 3d4aee3bbf70c4342860a2470d8ffe09,
         type: 3}

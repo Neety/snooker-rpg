@@ -9,20 +9,27 @@ public class MoveToActive : MonoBehaviour
     private Vector3 offset = new Vector3(0, 0, 1);
     private Transform currActive;
     private bool inPosition, change;
-    public bool moving = false;
-
     private void Start()
     {
         inPosition = false;
+
+
 
         transform.position = battleHandler.GetComponent<BattleHandler>().GetEntity(false)[0].transform.position;
 
         currActive = battleHandler.GetComponent<BattleHandler>().GetEntity(false)[0].transform;
     }
 
+    public bool GetMoving(bool moving)
+    {
+        return moving;
+    }
+
     private void FixedUpdate()
     {
-        if (moving == true)
+        inPosition = battleHandler.GetComponent<BattleHandler>().inPos();
+
+        if (GetMoving(true) && inPosition == true)
         {
             transform.position = currActive.position + offset;
         }

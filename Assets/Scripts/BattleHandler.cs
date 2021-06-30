@@ -13,7 +13,9 @@ public class BattleHandler : MonoBehaviour
     {
         return inst;
     }
-    [SerializeField] private GameObject pfPlayer, pfEnemy, pfDamageText, activeEntity;
+    [SerializeField] private GameObject pfWarrior;
+    [SerializeField] private GameObject pfOgre, pfGremlin, pfGoblin;
+    [SerializeField] private GameObject pfDamageText, activeEntity;
     public GameObject pfImpact;
     private int numOfPlayers;
     private int activePlayerNum;
@@ -77,7 +79,7 @@ public class BattleHandler : MonoBehaviour
         if (isPlayerTeam)
         {
             position = new Vector3(UnityEngine.Random.Range(-70f, 0f), UnityEngine.Random.Range(-45f, 0f), 0);
-            players.Insert(i, Instantiate(pfPlayer, position, Quaternion.identity));
+            players.Insert(i, Instantiate(pfWarrior, position, Quaternion.identity));
             players[i].GetComponent<PlayerBattle>().SetPlayerNum(i);
             players[i].GetComponentInChildren<HealthBar>().Setup(players[i].GetComponent<Health>());
             GenerateInitiative<PlayerBattle>(numOfPlayers, i);
@@ -85,11 +87,31 @@ public class BattleHandler : MonoBehaviour
         else
         {
             position = new Vector3(UnityEngine.Random.Range(70f, 0f), UnityEngine.Random.Range(45f, 0f), 0);
-            enemies.Insert(i, Instantiate(pfEnemy, position, Quaternion.identity));
+            enemies.Insert(i, Instantiate(EnemyGenerator(), position, Quaternion.identity));
             enemies[i].GetComponent<EnemyBattle>().SetEnemyNum(i);
             enemies[i].GetComponentInChildren<HealthBar>().Setup(enemies[i].GetComponent<Health>());
             GenerateInitiative<EnemyBattle>(numOfEnemies, i);
         }
+    }
+
+    private GameObject EnemyGenerator()
+    {
+        GameObject enemy;
+
+        int selector = UnityEngine.Random.Range(1, 100);
+
+        if (selector >= 1 && selector <= 20)
+        {
+            enemy = pfOgre;
+        }
+        else if (selector >= 21 && selector <= 50)
+        {
+            enemy = pfGremlin;
+        }
+        else
+            enemy = pfGoblin;
+
+        return enemy;
     }
 
     private void SetActive<T>(T activeEntity)
@@ -286,7 +308,7 @@ public class BattleHandler : MonoBehaviour
         }
     }
 
-    private bool inPos()
+    public bool inPos()
     {
         if (GetActive() == "Player")
         {
